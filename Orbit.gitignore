@@ -1,1 +1,18 @@
-Orbit\temp
+# Unity3D .gitignore file.
+# Store this file at the root of your local repository.
+.DS_Store
+Orbit/Library/AssetImportState
+Orbit/Library/AssetServerCacheV3
+Orbit/Library/FailedAssetImports.txt
+Orbit/Library/ScriptAssemblies
+Orbit/Library/ScriptMapper
+Orbit/Library/assetDatabase3
+Orbit/Library/cache
+Orbit/Library/expandedItems
+Orbit/Library/metadata
+Orbit/Library/previews
+Orbit/Library/guidmapper
+Orbit/Temp
+*.csproj
+*.pidb
+*.sln
