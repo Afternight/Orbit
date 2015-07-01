@@ -34,20 +34,19 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void OnCollisionEnter2D(Collision2D coll){ //NEED TO CHANGE THIS TO PLANET OBJECTS AND OTHERS
+	/*void OnCollisionEnter2D(Collision2D coll){ //NEED TO CHANGE THIS TO PLANET OBJECTS AND OTHERS
 		Application.LoadLevel (Application.loadedLevel); //resets level 
-	}
+	}*/
 	
 	void FixedUpdate () {
 		foreach(GameObject planet in planets) { //iterates through planets
 			float dist = Vector3.Distance(planet.transform.position, transform.position);
 			if (dist <= maxGravDist) {
-				maxGravity= 0.1f;//need to modify
+				maxGravity= 0.3f;//need to modify
 				maxGravity=maxGravity/dist*2;// distance gets smaller!!!!
 				Vector3 v = planet.transform.position - transform.position;
 				GetComponent<Rigidbody2D>().AddForce(v.normalized * (1.0f - dist / maxGravDist) * maxGravity,ForceMode2D.Impulse); //change max gravity based on distance from object
 			}
-			
 		}
 	}
 }
