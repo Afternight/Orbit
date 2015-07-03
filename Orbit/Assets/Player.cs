@@ -13,7 +13,9 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		fuel = 200;
+		GameObject controller=GameObject.Find ("GameController"); //finds gamecontroller
+		GameController control=controller.GetComponent<GameController>();
+		fuel=control.fuel;
 		planets = GameObject.FindGameObjectsWithTag("Planet");
 		An=GetComponent<Animator>();
 	}
@@ -33,10 +35,6 @@ public class Player : MonoBehaviour {
 			An.SetBool("Active",false);
 		}
 	}
-	
-	/*void OnCollisionEnter2D(Collision2D coll){ //NEED TO CHANGE THIS TO PLANET OBJECTS AND OTHERS
-		Application.LoadLevel (Application.loadedLevel); //resets level 
-	}*/
 	
 	void FixedUpdate () {
 		foreach(GameObject planet in planets) { //iterates through planets
