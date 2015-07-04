@@ -8,23 +8,26 @@ public class Player : MonoBehaviour {
 	public float maxGravity = 0.5f;
 	//public float gravitational=0.0000000000667f;
 	GameObject[] planets;
-	private int fuel;
+	private GameObject controller;
+	private GameController control;
+	//private int fuel;
 	Animator An;
 
 	// Use this for initialization
 	void Start () {
-		GameObject controller=GameObject.Find ("GameController"); //finds gamecontroller
-		GameController control=controller.GetComponent<GameController>();
-		fuel=control.fuel;
+		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		control=controller.GetComponent<GameController>();
+		//in future make reference to originalfuel level set by level by accessing level data script
+		//fuel=control.fuel;
 		planets = GameObject.FindGameObjectsWithTag("Planet");
 		An=GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetMouseButton (0)&&fuel>0) { //when mouse is held down
+		if (Input.GetMouseButton (0)&&control.fuel>0) { //when mouse is held down
 			An.SetBool("Active",true);
-			fuel=fuel-1;
+			control.fuel=control.fuel-1;
 			Rigidbody2D x = GetComponent<Rigidbody2D> ();
 			Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
 			diff.Normalize ();
