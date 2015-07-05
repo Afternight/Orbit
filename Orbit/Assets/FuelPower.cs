@@ -13,8 +13,12 @@ public class FuelPower : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		y=y+0.1f;
-		transform.rotation = Quaternion.Euler (0f, 0f, y);
+		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		control=controller.GetComponent<GameController>();
+		if (control.paused==false){
+			y=y+0.1f;
+			transform.rotation = Quaternion.Euler (0f, 0f, y);
+		}
 
 	}
 

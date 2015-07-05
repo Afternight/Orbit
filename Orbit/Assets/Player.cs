@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetMouseButton (0)&&control.fuel>0) { //when mouse is held down
+		if (Input.GetMouseButton (0)&&control.fuel>0) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSE
 			An.SetBool("Active",true);
 			control.fuel=control.fuel-1*Time.deltaTime;
 			Rigidbody2D x = GetComponent<Rigidbody2D> ();
@@ -49,6 +49,18 @@ public class Player : MonoBehaviour {
 				Vector3 v = planet.transform.position - transform.position;
 				GetComponent<Rigidbody2D>().AddForce(v.normalized * (1.0f - dist / maxGravDist) * maxGravity,ForceMode2D.Impulse); //change max gravity based on distance from object
 			}
+		}
+	}
+
+	public void Pause(){
+		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		control=controller.GetComponent<GameController>();
+		if (control.paused==false){
+			control.paused=true;
+			Time.timeScale=0;
+		} else if (control.paused==true) {
+			control.paused=false;
+			Time.timeScale=1;
 		}
 	}
 }
