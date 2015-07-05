@@ -3,7 +3,7 @@ using System.Collections;
 
 public class FuelPower : MonoBehaviour {
 	private float y=0f;
-	public int fuelamount=50;
+	public int fuelamount=3;
 	private GameObject controller;
 	private GameController control;
 	// Use this for initialization

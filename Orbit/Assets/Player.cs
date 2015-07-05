@@ -27,7 +27,7 @@ public class Player : MonoBehaviour {
 	void Update () {
 		if (Input.GetMouseButton (0)&&control.fuel>0) { //when mouse is held down
 			An.SetBool("Active",true);
-			control.fuel=control.fuel-1;
+			control.fuel=control.fuel-1*Time.deltaTime;
 			Rigidbody2D x = GetComponent<Rigidbody2D> ();
 			Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
 			diff.Normalize ();
@@ -37,6 +37,7 @@ public class Player : MonoBehaviour {
 		} else {
 			An.SetBool("Active",false);
 		}
+		control.time=control.time+1*Time.deltaTime;
 	}
 	
 	void FixedUpdate () {

@@ -3,7 +3,8 @@ using System.Collections;
 
 public class GameController : MonoBehaviour {
 	public static GameController control;
-	public int fuel=200;
+	public float fuel=5f; //fuel now in seconds of power
+	public float time=0f;
 	void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
 			DontDestroyOnLoad(gameObject);
