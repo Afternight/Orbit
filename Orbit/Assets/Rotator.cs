@@ -7,11 +7,6 @@ public class Rotator : MonoBehaviour {
 	private GameController control;
 	// Use this for initialization
 	void Start () {
-		if (PlayerPrefs.GetInt("Reset")==0){
-			transform.localScale=new Vector3(0f,0f,0f);
-		} else {
-			transform.localScale=new Vector3(0.24f,0.24f,0.24f);
-		}
 		y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
 	}
 	
@@ -22,18 +17,26 @@ public class Rotator : MonoBehaviour {
 		if(control.paused==false){ 
 			y=y+0.1f;
 			transform.rotation = Quaternion.Euler (0f, 0f, y);
-			if ((PlayerPrefs.GetInt("Reset")==0)&&(transform.localScale.x!=0.24)&&(transform.localScale.y!=0.24)){
-				transform.localScale+= new Vector3(0.01f,0.01f,0.01f);
-			}
 		}
 	}
-
-	void OnCollisionEnter2D(Collision2D coll){
+	public void Reset(){
 		PlayerPrefs.SetFloat("Rotate",y); //stores current rotation value
 		PlayerPrefs.SetInt("Reset",1);
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		control.fuel=200; //here make reference to level data script for fuel level to reset to
-		Application.LoadLevel (Application.loadedLevel); //resets level 
+		control.fuel=200f; //here make reference to level data script for fuel level to reset to
+		Application.LoadLevel (Application.loadedLevel); //resets level
+		//need to consider bug where planets arn't reset to original rotation values on reset when paused
+		if (control.paused==true){
+			/*y=PlayerPrefs.GetFloat("Rotate");
+			y=y+0.1f;
+			transform.rotation = Quaternion.Euler (0f, 0f, y);*/
+			control.paused=false;
+			Time.timeScale=1;
+		}
 	}
+	void OnCollisionEnter2D(Collision2D coll){
+		Reset();
+	}
+
 }

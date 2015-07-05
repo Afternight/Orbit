@@ -25,7 +25,9 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetMouseButton (0)&&control.fuel>0) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSE
+		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		control=controller.GetComponent<GameController>();
+		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSEbutton
 			An.SetBool("Active",true);
 			control.fuel=control.fuel-1*Time.deltaTime;
 			Rigidbody2D x = GetComponent<Rigidbody2D> ();
