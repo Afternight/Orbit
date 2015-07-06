@@ -3,7 +3,11 @@ using System.Collections;
 
 public class Rotator : MonoBehaviour {
 	private float y=0f;
+	private Vector2 velocity=new Vector2(0,0);
+	public float speed;
 	private GameObject controller;
+	private GameObject player;
+	private Rigidbody2D body;
 	private GameController control;
 	// Use this for initialization
 	void Start () {
@@ -36,7 +40,13 @@ public class Rotator : MonoBehaviour {
 		}
 	}
 	void OnCollisionEnter2D(Collision2D coll){
-		Reset();
+		player=GameObject.Find("Rocket");
+		body=player.GetComponent<Rigidbody2D>();
+		velocity=body.velocity;
+		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
+		if (speed>=3f){
+			Reset();
+		}
 	}
 
 }
