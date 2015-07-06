@@ -4,8 +4,10 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	public Vector2 y = new Vector2 (0,0.1f);
 	private Vector2 mousePosition;
+	public Vector3 impact = new Vector3(0,0,0);
 	public float maxGravDist = 100f;
 	public float maxGravity = 0.5f;
+	public ContactPoint2D[] rocketpoint;
 	//public float gravitational=0.0000000000667f;
 	GameObject[] planets;
 	private GameObject controller;
@@ -64,5 +66,10 @@ public class Player : MonoBehaviour {
 			control.paused=false;
 			Time.timeScale=1;
 		}
+	}
+	void OnCollisionEnter2D(Collision2D coll){
+		rocketpoint=coll.contacts;
+		impact=gameObject.transform.InverseTransformPoint(rocketpoint[0].point);
+
 	}
 }
