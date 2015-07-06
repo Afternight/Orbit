@@ -6,7 +6,7 @@ public class Rotator : MonoBehaviour {
 	private Vector2 velocity=new Vector2(0,0);
 	public float speed;
 	private Collider2D Poly;
-	private Collider2D Base;
+	//private Collider2D Base;
 	private GameObject controller;
 	private GameObject player;
 	private Player playerscript;
@@ -36,11 +36,7 @@ public class Rotator : MonoBehaviour {
 		control=controller.GetComponent<GameController>();
 		control.fuel=200f; //here make reference to level data script for fuel level to reset to
 		Application.LoadLevel (Application.loadedLevel); //resets level
-		//need to consider bug where planets arn't reset to original rotation values on reset when paused
 		if (control.paused==true){
-			/*y=PlayerPrefs.GetFloat("Rotate");
-			y=y+0.1f;
-			transform.rotation = Quaternion.Euler (0f, 0f, y);*/
 			control.paused=false;
 			Time.timeScale=1;
 		}
@@ -50,7 +46,7 @@ public class Rotator : MonoBehaviour {
 		playerscript=player.GetComponent<Player>();
 		body=player.GetComponent<Rigidbody2D>();
 		Poly=player.GetComponent<PolygonCollider2D>();
-		Base=player.GetComponent<BoxCollider2D>();
+		//Base=player.GetComponent<EdgeCollider2D>();
 		velocity=body.velocity;
 		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
 		jointlimit.max=60f;
