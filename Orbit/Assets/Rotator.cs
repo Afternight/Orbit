@@ -42,6 +42,8 @@ public class Rotator : MonoBehaviour {
 		}
 	}
 	void OnCollisionEnter2D(Collision2D coll){
+		controller=GameObject.Find ("GameController");
+		control=controller.GetComponent<GameController>();
 		player=GameObject.Find("Rocket");
 		playerscript=player.GetComponent<Player>();
 		body=player.GetComponent<Rigidbody2D>();
@@ -49,19 +51,33 @@ public class Rotator : MonoBehaviour {
 		//Base=player.GetComponent<EdgeCollider2D>();
 		velocity=body.velocity;
 		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
-		jointlimit.max=60f;
-		jointlimit.min=50f;
+		jointlimit.max=0f;
+		jointlimit.min=359f;
 		if ((speed>=2f)||(coll.collider==Poly)){
 			Reset();
 		} else {
-			joint=gameObject.AddComponent<HingeJoint2D>();
-			joint.enableCollision=true;
-			joint.useLimits=true;
-			joint.limits=jointlimit;
-			joint.connectedBody=coll.rigidbody;
-			contacting=coll.contacts;
-			joint.anchor=gameObject.transform.InverseTransformPoint(contacting[0].point);
-			joint.connectedAnchor=playerscript.impact;
+			if (control.hooked==false){
+				joint=gameObject.AddComponent<HingeJoint2D>();
+				joint.enableCollision=true;
+				joint.useLimits=true;
+				joint.limits=jointlimit;
+				joint.connectedBody=coll.rigidbody;
+				contacting=coll.contacts;
+				joint.anchor=gameObject.transform.InverseTransformPoint(contacting[0].point);
+				joint.connectedAnchor=playerscript.impact;
+				control.hooked=true;
+			} else if (control.hooked==true){
+				Destroy(gameObject.GetComponent<HingeJoint2D>());
+				joint=gameObject.AddComponent<HingeJoint2D>();
+				joint.enableCollision=true;
+				joint.useLimits=true;
+				joint.limits=jointlimit;
+				joint.connectedBody=coll.rigidbody;
+				contacting=coll.contacts;
+				joint.anchor=gameObject.transform.InverseTransformPoint(contacting[0].point);
+				joint.connectedAnchor=playerscript.impact;
+				control.hooked=true;
+			}
 		}
 	}
 
