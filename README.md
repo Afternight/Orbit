@@ -38,7 +38,7 @@ Level selection screen
 Code-
 
 
-Make rocket rotate with planet when landed
+decide on launching mechanism
 
 
 Fuel bar logic
