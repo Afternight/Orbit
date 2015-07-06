@@ -5,6 +5,8 @@ public class Rotator : MonoBehaviour {
 	private float y=0f;
 	private Vector2 velocity=new Vector2(0,0);
 	public float speed;
+	private Collider2D Poly;
+	private Collider2D Base;
 	private GameObject controller;
 	private GameObject player;
 	private Rigidbody2D body;
@@ -42,11 +44,14 @@ public class Rotator : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll){
 		player=GameObject.Find("Rocket");
 		body=player.GetComponent<Rigidbody2D>();
+		Poly=player.GetComponent<PolygonCollider2D>();
+		Base=player.GetComponent<BoxCollider2D>();
 		velocity=body.velocity;
 		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
-		if (speed>=3f){
+		if ((speed>=3f)||(coll.collider==Poly)){
 			Reset();
 		}
+
 	}
 
 }
