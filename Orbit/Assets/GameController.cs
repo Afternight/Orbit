@@ -6,7 +6,8 @@ public class GameController : MonoBehaviour {
 	public float fuel=5f; //fuel now in seconds of power
 	public float time=0f;
 	public bool paused=false;
-	public bool hooked=false;
+	public bool hookedalpha=false;
+	public bool hookedbeta=false;
 	void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
 			DontDestroyOnLoad(gameObject);
