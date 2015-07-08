@@ -50,6 +50,7 @@
      <Compile Include="Assets\GameController.cs" />
      <Compile Include="Assets\Player.cs" />
      <Compile Include="Assets\Rotator.cs" />
+     <Compile Include="Assets\pinch.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />

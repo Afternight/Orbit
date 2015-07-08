@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
 	public Vector2 y = new Vector2 (0,0.1f);
 	private Vector2 mousePosition;
 	public Vector3 impact = new Vector3(0,0,0);
+	public Vector2 centermass= new Vector2(0,-2);
 	public float maxGravDist = 100f;
 	public float maxGravity = 0.5f;
 	public ContactPoint2D[] rocketpoint;
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour {
 	GameObject[] planets;
 	private GameObject controller;
 	private GameController control;
+	private Rigidbody2D center;
 	//private int fuel;
 	Animator An;
 
@@ -23,6 +25,8 @@ public class Player : MonoBehaviour {
 		//fuel=control.fuel;
 		planets = GameObject.FindGameObjectsWithTag("Planet");
 		An=GetComponent<Animator>();
+		center=GetComponent<Rigidbody2D>();
+		center.centerOfMass=centermass;
 	}
 	
 	// Update is called once per frame
@@ -31,6 +35,7 @@ public class Player : MonoBehaviour {
 		control=controller.GetComponent<GameController>();
 		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSEbutton
 			An.SetBool("Active",true);
+			control.powered=true;
 			control.fuel=control.fuel-1*Time.deltaTime;
 			Rigidbody2D x = GetComponent<Rigidbody2D> ();
 			Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
@@ -40,6 +45,7 @@ public class Player : MonoBehaviour {
 			x.AddRelativeForce (y, ForceMode2D.Impulse);
 		} else {
 			An.SetBool("Active",false);
+			control.powered=false;
 		}
 		control.time=control.time+1*Time.deltaTime;
 	}
