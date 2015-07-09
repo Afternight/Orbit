@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour {
 	public Vector2 y = new Vector2 (0,0.1f);
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour {
 	private GameObject controller;
 	private GameController control;
 	private Rigidbody2D center;
+	private bool uidetected=false;
 	//private int fuel;
 	Animator An;
 
@@ -33,16 +35,22 @@ public class Player : MonoBehaviour {
 	void Update () {
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSEbutton
-			An.SetBool("Active",true);
-			control.powered=true;
-			control.fuel=control.fuel-1*Time.deltaTime;
-			Rigidbody2D x = GetComponent<Rigidbody2D> ();
-			Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
-			diff.Normalize ();
-			float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-			x.AddRelativeForce (y, ForceMode2D.Impulse);
+		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false&&control.launched==true) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSEbutton
+			uidetected=control.UiDetect();
+			if (uidetected==true){
+				An.SetBool("Active",false);
+				control.powered=false;
+			} else {
+				An.SetBool("Active",true);
+				control.powered=true;
+				control.fuel=control.fuel-1*Time.deltaTime;
+				Rigidbody2D x = GetComponent<Rigidbody2D> ();
+				Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
+				diff.Normalize ();
+				float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+				transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+				x.AddRelativeForce (y, ForceMode2D.Impulse);
+			}
 		} else {
 			An.SetBool("Active",false);
 			control.powered=false;
@@ -76,6 +84,6 @@ public class Player : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll){
 		rocketpoint=coll.contacts;
 		impact=gameObject.transform.InverseTransformPoint(rocketpoint[0].point);
-
+		
 	}
 }

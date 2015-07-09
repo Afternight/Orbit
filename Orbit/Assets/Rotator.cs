@@ -12,7 +12,6 @@ public class Rotator : MonoBehaviour {
 	private Player playerscript;
 	private Rigidbody2D body;
 	private HingeJoint2D joint;
-	private DistanceJoint2D joint2;
 	private GameController control;
 	private ContactPoint2D[] contacting;
 	private JointAngleLimits2D jointlimit;
@@ -43,6 +42,7 @@ public class Rotator : MonoBehaviour {
 		control.fuel=200f; //here make reference to level data script for fuel level to reset to
 		control.hookedalpha=false;
 		control.hookedbeta=false;
+		control.launched=false;
 		Application.LoadLevel (Application.loadedLevel); //resets level
 		if (control.paused==true){
 			control.paused=false;
