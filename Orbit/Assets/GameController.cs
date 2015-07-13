@@ -12,11 +12,14 @@ public class GameController : MonoBehaviour {
 	public bool launched=false;
 	public bool button=false;
 	public bool inLevel=false;
+	public float orthoZoomSpeed = 0.1f;
 
 	public Vector2 power = new Vector2 (0,0.1f);
 	//Gameobjects
 	public GameObject player;
 	public GameObject launcher;
+	public GameObject MainCam;
+	public Camera Cam;
 	Animator An;
 	//event system variables
 
@@ -34,44 +37,66 @@ public class GameController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//Event system
-		if (inLevel){
+		if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			launcher=GameObject.Find("Launcher");
-			An=player.GetComponent<Animator>();
-			Debug.Log ("something is working");
-
+		}
+		//always present declarations
+		MainCam=GameObject.Find("Main Camera");
+		Cam=MainCam.GetComponent<Camera>();
+		An=player.GetComponent<Animator>();
+		if (launched){ //if the rocket is grounded or not, also set to false for non-playing levels
 			if (Input.touchCount==1){
-				Debug.Log ("touched");
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
 				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
-					if (launched){ //if the rocket has been launched
-						if (fuel>0){ //if the rocket has fuel
-							An.SetBool("Active",true);
-							powered=true;
-							fuel=fuel-1*Time.deltaTime;
-							Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
-							Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - player.transform.position;
-							diff.Normalize ();
-							float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-							player.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-							x.AddRelativeForce (power, ForceMode2D.Impulse);
-						} else {
-							An.SetBool("Active",false);
-							powered=false;
-						}
-					} else { //if the rocket is yet to launch
-						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
+					if (fuel>0){ //if the rocket has fuel
+						An.SetBool("Active",true);
+						powered=true;
+						fuel=fuel-1*Time.deltaTime;
+						Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
+						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - player.transform.position;
 						diff.Normalize ();
 						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-						launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+						player.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+						x.AddRelativeForce (power, ForceMode2D.Impulse);
+					} else {
+						An.SetBool("Active",false);
+						powered=false;
 					}
 				}
 			} else { //if nothing else is touched make sure to reset rocket power
 				powered=false;
 				An.SetBool("Active",false);
 			}
+		} else {
+			if (Input.touchCount==1){
+				touch=Input.GetTouch(0);
+				if ((TargetDetect(touch)==true)&&(UiDetect(touch)==false)){ //check if touch is incident with target object
+					Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
+					diff.Normalize ();
+					float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+					launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+				} else { // if its not incident then we want to have the camera drag capability
+					//need something in here
+				}
+			} else if (Input.touchCount==2){ //if two fingers are touching, meaning we want to pinch zoom
+				Touch touchZero = Input.GetTouch(0);
+				Touch touchOne = Input.GetTouch(1);
+				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
+				Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+				float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; // Find the magnitude of the vector (the distance) between the touches in each frame.
+				float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+				float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
+
+				Cam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+
+				Cam.orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+			}
 		}
+		time=time+1*Time.deltaTime;
 	}
 	public void SceneSwitchers (int target) {
 		if (target>=1){
@@ -79,6 +104,7 @@ public class GameController : MonoBehaviour {
 		} else {
 			inLevel=false;
 		}
+		launched=false;
 		Application.LoadLevel(target);
 	}
 	public bool UiDetect(Touch touchdetect){
@@ -94,5 +120,9 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		return false;
+	}
+	
+	public bool TargetDetect(Touch touchdetect){
+						return false;
 	}
 }

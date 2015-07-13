@@ -31,28 +31,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		/*controller=GameObject.Find ("GameController"); //finds gamecontroller
-		control=controller.GetComponent<GameController>();
-		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false&&control.launched==true) {
-			if (control.UiDetect()){
-				An.SetBool("Active",false);
-				control.powered=false;
-			} else {
-				An.SetBool("Active",true);
-				control.powered=true;
-				control.fuel=control.fuel-1*Time.deltaTime;
-				Rigidbody2D x = GetComponent<Rigidbody2D> ();
-				Vector3 diff = Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position;
-				diff.Normalize ();
-				float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-				transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-				x.AddRelativeForce (y, ForceMode2D.Impulse);
-			}
-		} else {
-			An.SetBool("Active",false);
-			control.powered=false;
-		}*/
-		control.time=control.time+1*Time.deltaTime;
+
 	}
 	
 	void FixedUpdate () {
