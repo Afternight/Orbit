@@ -15,8 +15,6 @@ public class Player : MonoBehaviour {
 	private GameObject controller;
 	private GameController control;
 	private Rigidbody2D center;
-	private bool uidetected=false;
-	//private int fuel;
 	Animator An;
 
 	// Use this for initialization
@@ -33,11 +31,10 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		/*controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false&&control.launched==true) { //when mouse is held down NEED TO ADD EXCEPTION FOR PAUSEbutton
-			uidetected=control.UiDetect();
-			if (uidetected==true){
+		if (Input.GetMouseButton (0)&&control.fuel>0&&control.paused==false&&control.launched==true) {
+			if (control.UiDetect()){
 				An.SetBool("Active",false);
 				control.powered=false;
 			} else {
@@ -54,7 +51,7 @@ public class Player : MonoBehaviour {
 		} else {
 			An.SetBool("Active",false);
 			control.powered=false;
-		}
+		}*/
 		control.time=control.time+1*Time.deltaTime;
 	}
 	

@@ -15,7 +15,7 @@ public class launcher : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		/*controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
 		if (Input.GetMouseButton (0)&&control.paused==false&&control.launched==false){
 			uidetect=control.UiDetect();
@@ -27,7 +27,7 @@ public class launcher : MonoBehaviour {
 				float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
 				transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
 			}
-		}
+		}*/
 	}
 
 	public void Launch(){

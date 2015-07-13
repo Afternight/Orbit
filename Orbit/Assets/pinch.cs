@@ -13,6 +13,9 @@ public class pinch : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// If there are two touches on the device...
+		if (Input.touchCount == 1){
+			Debug.Log ("amazing");
+		}
 		if (Input.touchCount == 2){
 			// Store both touches.
 			Touch touchZero = Input.GetTouch(0);
