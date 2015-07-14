@@ -5,7 +5,6 @@ public class Rotator : MonoBehaviour {
 	private float y=0f;
 	private Vector2 velocity=new Vector2(0,0);
 	public float speed;
-	private Collider2D Poly;
 	private Collider2D Base;
 	private GameObject controller;
 	private GameObject player;
@@ -50,22 +49,19 @@ public class Rotator : MonoBehaviour {
 		}
 	}
 	void OnCollisionEnter2D(Collision2D coll){
-		Debug.Log("collided");
 		controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
+		control.launched=false;
 		player=GameObject.Find("Rocket");
 		playerscript=player.GetComponent<Player>();
 		body=player.GetComponent<Rigidbody2D>();
-		Poly=player.GetComponent<PolygonCollider2D>();
 		Base=player.GetComponent<EdgeCollider2D>();
 		velocity=body.velocity;
 		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
 		jointlimit.max=0f;
 		jointlimit.min=359f;
-		Debug.Log("speed"+speed);
 		if ((speed<3.5f)&&(coll.collider==Base)){
-			Debug.Log("infirst");
-			contacting=coll.contacts;
+			//contacting=coll.contacts;
 			if (control.hookedalpha==false){
 				//create first hinge joint
 				joint=gameObject.AddComponent<HingeJoint2D>();
@@ -77,19 +73,7 @@ public class Rotator : MonoBehaviour {
 				joint.connectedAnchor=playerscript.impact;
 				player.transform.SetParent(gameObject.transform);
 				control.hookedalpha=true;
-			} /*else if ((control.hookedalpha==true)&&(Mathf.Abs(Vector2.Distance(gameObject.transform.InverseTransformPoint(contacting[0].point),gameObject.GetComponent<HingeJoint2D>().anchor)))>=1f&&(control.hookedbeta==false)){
-				//if previously hooked and the distance between the previous hook and the new hook is greater then one absolute then
-				//create second normal joint
-				//purpose is to force joint onto other side of rocket
-				Debug.Log("in");
-				joint2=gameObject.AddComponent<DistanceJoint2D>();
-				joint2.enableCollision=true;
-				joint2.connectedBody=coll.rigidbody;
-				joint2.anchor=gameObject.transform.InverseTransformPoint(playerscript.rocketpoint[0].point);
-				joint2.connectedAnchor=playerscript.impact;
-				joint2.distance=0;
-				control.hookedbeta=true;
-			}*/
+			}
 		} else {
 			Reset();
 		}

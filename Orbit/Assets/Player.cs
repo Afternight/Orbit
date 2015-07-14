@@ -15,7 +15,6 @@ public class Player : MonoBehaviour {
 	private GameObject controller;
 	private GameController control;
 	private Rigidbody2D center;
-	Animator An;
 
 	// Use this for initialization
 	void Start () {
@@ -24,7 +23,6 @@ public class Player : MonoBehaviour {
 		//in future make reference to originalfuel level set by level by accessing level data script
 		//fuel=control.fuel;
 		planets = GameObject.FindGameObjectsWithTag("Planet");
-		An=GetComponent<Animator>();
 		center=GetComponent<Rigidbody2D>();
 		center.centerOfMass=centermass;
 	}

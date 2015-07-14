@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour {
 	public bool launched=false;
 	public bool button=false;
 	public bool inLevel=false;
-	public float orthoZoomSpeed = 0.1f;
+	public float orthoZoomSpeed = 0.03f;
 
 	public Vector2 power = new Vector2 (0,0.1f);
 	//Gameobjects
@@ -41,13 +41,13 @@ public class GameController : MonoBehaviour {
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			launcher=GameObject.Find("Launcher");
+			An=player.GetComponent<Animator>();
 		}
 		//always present declarations
 		MainCam=GameObject.Find("Main Camera");
 		Cam=MainCam.GetComponent<Camera>();
-		An=player.GetComponent<Animator>();
 		if (launched){ //if the rocket is grounded or not, also set to false for non-playing levels
-			if (Input.touchCount==1){
+			if (Input.touchCount>=1){
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
 				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
 					if (fuel>0){ //if the rocket has fuel
@@ -78,10 +78,13 @@ public class GameController : MonoBehaviour {
 					float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
 					launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
 				} else { // if its not incident then we want to have the camera drag capability
-					//need something in here
+					Vector2 touchprev=touch.position-touch.deltaPosition;
+					Vector2 touchmagnitude=touch.position-touchprev;
+					Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
+					Cam.transform.position+=newpos;
 				}
 			} else if (Input.touchCount==2){ //if two fingers are touching, meaning we want to pinch zoom
-				Touch touchZero = Input.GetTouch(0);
+				Touch touchZero = touch;
 				Touch touchOne = Input.GetTouch(1);
 				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
 				Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
@@ -90,10 +93,10 @@ public class GameController : MonoBehaviour {
 				float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
 
 				float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
-
-				Cam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
-
-				Cam.orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+				if (Mathf.Abs(deltaMagnitudeDiff*orthoZoomSpeed)>=0.1f){ //ensure change is substantial to prevent flickering
+					Cam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+				}
+				Cam.orthographicSize = Mathf.Max(Cam.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
 			}
 		}
 		time=time+1*Time.deltaTime;
@@ -122,7 +125,7 @@ public class GameController : MonoBehaviour {
 		return false;
 	}
 	
-	public bool TargetDetect(Touch touchdetect){
-						return false;
+	public bool TargetDetect(Touch touchdetect){ //currently stubbed till target implemented
+		return true;
 	}
 }
