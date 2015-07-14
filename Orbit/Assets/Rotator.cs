@@ -14,6 +14,8 @@ public class Rotator : MonoBehaviour {
 	private GameController control;
 	private ContactPoint2D[] contacting;
 	private JointAngleLimits2D jointlimit;
+	private GameObject launch;
+	private launcher launchscript;
 	// Use this for initialization
 	void Start () {
 		y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
@@ -36,12 +38,18 @@ public class Rotator : MonoBehaviour {
 	public void Reset(){
 		PlayerPrefs.SetFloat("Rotate",y); //stores current rotation value
 		PlayerPrefs.SetInt("Reset",1);
+		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
 		control.fuel=200f; //here make reference to level data script for fuel level to reset to
 		control.hookedalpha=false;
-		control.hookedbeta=false;
+		control.camhook=false;
 		control.launched=false;
+		//Launcher resets
+		launch=GameObject.Find("Launcher");
+		launchscript=launch.GetComponent<launcher>();
+		launchscript.interpolate=false;
+
 		Application.LoadLevel (Application.loadedLevel); //resets level
 		if (control.paused==true){
 			control.paused=false;
@@ -51,7 +59,7 @@ public class Rotator : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll){
 		controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
-		control.launched=false;
+		//control.launched=false;
 		player=GameObject.Find("Rocket");
 		playerscript=player.GetComponent<Player>();
 		body=player.GetComponent<Rigidbody2D>();

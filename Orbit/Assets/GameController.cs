@@ -7,14 +7,14 @@ public class GameController : MonoBehaviour {
 	public float time=0f;
 	public bool paused=false;
 	public bool hookedalpha=false;
-	public bool hookedbeta=false;
 	public bool powered=false;
 	public bool launched=false;
 	public bool button=false;
 	public bool inLevel=false;
 	public float orthoZoomSpeed = 0.03f;
-
+	public bool camhook=false;
 	public Vector2 power = new Vector2 (0,0.1f);
+
 	//Gameobjects
 	public GameObject player;
 	public GameObject launcher;
@@ -33,7 +33,14 @@ public class GameController : MonoBehaviour {
 			Destroy(gameObject);
 		}
 	}
-	
+
+	void Start () {
+		//set player preferences if they are not already set
+		if (PlayerPrefs.GetFloat("PlayZoom")==0f){
+			PlayerPrefs.SetFloat("PlayZoom",4f);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 		//Event system
