@@ -3,36 +3,41 @@ Repo for the Orbit mobile application project
 
 
 CHECKLIST
-Graphics -
+GRAPHICAL ELEMENTS
 
 
-URGENT FUEL BAR
-Launch button which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
-
-
-Fuel bar needs seperate bar graphic, as in the loading bar bit is seperated from the backdrop etc
+**- URGENT FUEL BAR**
+Fuel bar needs (seperate) bar graphic, as in the loading bar bit is seperated from the backdrop etc
 Arrows to go around planets 
 
+**- LAUNCH BUTTON **
 
-Menu, the planets as actual buttons
-
-
-Starting asteroid, like a really small asteroid  that is where the rocket starts
+which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
 
 
-Finishing object, object that finishes the level when you touch it
+**Menu, the planets as actual buttons **
+DONE
+
+**- STARTING ASTEROID **
+like a really small asteroid  that is where the rocket starts
 
 
-Destruction animation
+**Finishing object**
+object that finishes the level when you touch it
 
 
-Pause/restart buttons
+**- DESTRUCTION ANIMATION**
+(sprite sheet from rocket)
 
 
-Pause menu, like a menu that materialises when game paused. Basic concept of it split into quaters, top right assigned to stats of level atm, other 3 to the buttons for resume,restart,exit to menu //consider removing reset button from pause menu if to much clutter
+**- PAUSE / RESTART BUTTONS**
 
 
-Level selection screen
+**- PAUSE MENU**
+like a menu that materialises when game paused. Basic concept of it split into quaters, top right assigned to stats of level atm, other 3 to the buttons for resume,restart,exit to menu //consider removing reset button from pause menu if to much clutter
+
+
+**Level selection screen**
 
 
 Code-
