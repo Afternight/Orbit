@@ -27,7 +27,7 @@ object that finishes the level when you touch it
 
 
 **- DESTRUCTION ANIMATION**
-(sprite sheet from rocket)
+(sprite sheet from rocket) NEEDS REFINEMENT
 
 
 **- PAUSE / RESTART BUTTONS**
