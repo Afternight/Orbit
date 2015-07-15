@@ -17,6 +17,14 @@ public class GameController : MonoBehaviour {
 	private bool draginprogress = false;
 	public bool resetcam=false;
 	public bool interpolate=false;
+	private float distance=0f;
+	private float scaleddistance=0f;
+	private Vector2 difference=new Vector2(0,0);
+	private Vector2 launcherpos=new Vector2(0,0);
+	private Vector3 launcherpos3=new Vector3(0,0,0);
+	private Vector3 maxscale =new Vector3(10,15,10);
+	private Vector3 minscale =new Vector3(10,3,10);
+	private Vector3 trajscale= new Vector3 (10,0,10);
 
 	//Gameobjects
 	public GameObject player;
@@ -101,11 +109,7 @@ public class GameController : MonoBehaviour {
 						if (touch.phase==TouchPhase.Began){
 							draginprogress=true;
 						}
-						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
-						diff.Normalize ();
-						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-						launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
+						Launcherrotate(launcher,touch);
 					} else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
 						Vector2 touchprev=touch.position-touch.deltaPosition;
 						Vector2 touchmagnitude=touch.position-touchprev;
@@ -114,11 +118,7 @@ public class GameController : MonoBehaviour {
 					}
 				} else if ((touch.phase==TouchPhase.Moved)||(touch.phase==TouchPhase.Stationary)){
 					if (draginprogress){
-						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
-						diff.Normalize ();
-						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-						launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
+						Launcherrotate(launcher,touch);
 					} else {
 						Vector2 touchprev=touch.position-touch.deltaPosition;
 						Vector2 touchmagnitude=touch.position-touchprev;
@@ -156,7 +156,9 @@ public class GameController : MonoBehaviour {
 		if ((zoomready==true)&&(camposready==true)&&(rocketdestroyed==true)){
 			planetscript.Reset();
 		}
-		time=time+1*Time.deltaTime;
+		if ((launched==true)&&(paused==false)){
+			time=time+1*Time.deltaTime;
+		}
 	}
 	public void SceneSwitchers (int target) {
 		if (target>=1){
@@ -205,5 +207,31 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		return false;
+	}
+
+	private void Launcherrotate(GameObject launcher,Touch touch){
+		Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
+		diff.Normalize ();
+		float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+		launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+		trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
+		//calculate distance from touch to center of planet
+		launcherpos3=transform.TransformPoint(launcher.transform.position);
+		launcherpos.x=launcherpos3.x;
+		launcherpos.y=launcherpos3.y;
+		difference=touch.position-launcherpos;
+		distance=difference.magnitude;
+		Debug.Log (distance);
+		//set a max
+		if (Mathf.Abs(distance)>=400f){ //need to find the right value for this
+			trajectory.transform.localScale=maxscale;
+		} else if (Mathf.Abs(distance)<=50f){ //set a min
+			trajectory.transform.localScale=minscale;
+		} else {// if inbetween calculate scale factor by percentage of max reached
+			scaleddistance=Mathf.Abs(distance)-50f;
+			scaleddistance=scaleddistance/400f; // calculate scale
+			trajscale.y=scaleddistance*15f; //add minimum of 2 onto existing
+			trajectory.transform.localScale=trajscale;
+		}
 	}
 }

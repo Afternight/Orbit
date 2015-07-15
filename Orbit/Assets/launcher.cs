@@ -17,6 +17,9 @@ public class launcher : MonoBehaviour {
 	public GameObject MainCam;
 	public Quaternion degree0 = Quaternion.Euler(0f,0f,0f);
 	public float angle=0f;
+	public float bound=0.5f;
+	private float prevcamtargx=0f;
+	private float prevcamtargy=0f;
 
 	private Camera Cam;
 	private GameObject trajectory;
@@ -56,7 +59,7 @@ public class launcher : MonoBehaviour {
 			}
 			differencex=MainCam.transform.position.x - CamTarget.transform.position.x;
 			differencey=MainCam.transform.position.y - CamTarget.transform.position.y;
-			if (((Mathf.Abs(differencex)<0.1f)&&(Mathf.Abs(differencey)<0.1f))||control.camhook==true){
+			if (((Mathf.Abs(differencex)<bound)&&(Mathf.Abs(differencey)<bound))||control.camhook==true){
 				pinpoint.x=CamTarget.transform.position.x;
 				pinpoint.y=CamTarget.transform.position.y;
 				MainCam.transform.position=pinpoint;

@@ -45,6 +45,8 @@ public class Rotator : MonoBehaviour {
 		control.hookedalpha=false;
 		control.camhook=false;
 		control.launched=false;
+		control.time=0f;
+
 		//Launcher resets
 		control.interpolate=false;
 		control.resetcam=false;
