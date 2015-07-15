@@ -15,15 +15,24 @@ public class GameController : MonoBehaviour {
 	public bool camhook=false;
 	public Vector2 power = new Vector2 (0,0.1f);
 	private bool draginprogress = false;
+	public bool resetcam=false;
+	public bool interpolate=false;
 
 	//Gameobjects
 	public GameObject player;
 	public GameObject launcher;
 	public GameObject MainCam;
 	public GameObject trajectory;
+	public GameObject planet;
+	private Rotator planetscript;
 	private launcher launchscript;
 	public Camera Cam;
 	Animator An;
+
+	//Reset strikes
+	public bool zoomready=false;
+	public bool camposready=false;
+	public bool rocketdestroyed=false;
 	//event system variables
 
 	private Touch touch;
@@ -50,6 +59,8 @@ public class GameController : MonoBehaviour {
 		if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
+			planet=GameObject.Find("Mars");
+			planetscript=planet.GetComponent<Rotator>();
 			launcher=GameObject.Find("Launcher");
 			launchscript=launcher.GetComponent<launcher>();
 			trajectory=GameObject.Find("Trajectory");
@@ -100,7 +111,6 @@ public class GameController : MonoBehaviour {
 						Vector2 touchmagnitude=touch.position-touchprev;
 						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
 						Cam.transform.position+=newpos;
-						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
 					}
 				} else if ((touch.phase==TouchPhase.Moved)||(touch.phase==TouchPhase.Stationary)){
 					if (draginprogress){
@@ -114,15 +124,18 @@ public class GameController : MonoBehaviour {
 						Vector2 touchmagnitude=touch.position-touchprev;
 						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
 						Cam.transform.position+=newpos;
-						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
 					}
 				} else if ((touch.phase==TouchPhase.Ended)||(touch.phase==TouchPhase.Canceled)){
 					draginprogress=false;
-					trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+					if (inLevel){
+						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+					}
 					//also put in momentum code here?
 				}
 			} else if (Input.touchCount==2){ //if two fingers are touching, meaning we want to pinch zoom
-				trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+				if (inLevel){
+					trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+				}
 				Touch touchZero = touch;
 				Touch touchOne = Input.GetTouch(1);
 				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
@@ -137,6 +150,11 @@ public class GameController : MonoBehaviour {
 				}
 				Cam.orthographicSize = Mathf.Max(Cam.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
 			}
+		}
+
+		//reset strike system
+		if ((zoomready==true)&&(camposready==true)&&(rocketdestroyed==true)){
+			planetscript.Reset();
 		}
 		time=time+1*Time.deltaTime;
 	}

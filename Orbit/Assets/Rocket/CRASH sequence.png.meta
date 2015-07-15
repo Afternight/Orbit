@@ -1,0 +1,143 @@
+fileFormatVersion: 2
+guid: 4c8bba42cf87d7245a960d28041b0b68
+timeCreated: 1436934776
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: CRASH sequence_0
+    21300002: CRASH sequence_1
+    21300004: CRASH sequence_2
+    21300006: CRASH sequence_3
+    21300008: CRASH sequence_4
+    21300010: CRASH sequence_5
+    21300012: CRASH sequence_6
+    21300014: CRASH sequence_7
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: CRASH sequence_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 339
+        width: 247
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_1
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 266
+        width: 403
+        height: 439
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_2
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 221
+        width: 474
+        height: 490
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_3
+      rect:
+        serializedVersion: 2
+        x: 1701
+        y: 75
+        width: 757
+        height: 811
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_4
+      rect:
+        serializedVersion: 2
+        x: 2617
+        y: 78
+        width: 964
+        height: 821
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_5
+      rect:
+        serializedVersion: 2
+        x: 3734
+        y: 0
+        width: 913
+        height: 977
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_6
+      rect:
+        serializedVersion: 2
+        x: 4848
+        y: 119
+        width: 888
+        height: 710
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: CRASH sequence_7
+      rect:
+        serializedVersion: 2
+        x: 6000
+        y: 164
+        width: 517
+        height: 620
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

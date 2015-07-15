@@ -16,6 +16,7 @@ public class Rotator : MonoBehaviour {
 	private JointAngleLimits2D jointlimit;
 	private GameObject launch;
 	private launcher launchscript;
+	Animator An;
 	// Use this for initialization
 	void Start () {
 		y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
@@ -37,7 +38,6 @@ public class Rotator : MonoBehaviour {
 	}
 	public void Reset(){
 		PlayerPrefs.SetFloat("Rotate",y); //stores current rotation value
-		PlayerPrefs.SetInt("Reset",1);
 		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
@@ -46,9 +46,11 @@ public class Rotator : MonoBehaviour {
 		control.camhook=false;
 		control.launched=false;
 		//Launcher resets
-		launch=GameObject.Find("Launcher");
-		launchscript=launch.GetComponent<launcher>();
-		launchscript.interpolate=false;
+		control.interpolate=false;
+		//Reset strike system resets
+		control.camposready=false;
+		control.zoomready=false;
+		control.rocketdestroyed=false;
 
 		Application.LoadLevel (Application.loadedLevel); //resets level
 		if (control.paused==true){
@@ -61,6 +63,7 @@ public class Rotator : MonoBehaviour {
 		control=controller.GetComponent<GameController>();
 		//control.launched=false;
 		player=GameObject.Find("Rocket");
+		An=player.GetComponent<Animator>();
 		playerscript=player.GetComponent<Player>();
 		body=player.GetComponent<Rigidbody2D>();
 		Base=player.GetComponent<EdgeCollider2D>();
@@ -83,7 +86,11 @@ public class Rotator : MonoBehaviour {
 				control.hookedalpha=true;
 			}
 		} else {
-			Reset();
+			An.SetBool("Collision",true);
+			control.rocketdestroyed=true;
+			control.interpolate=false;
+			control.resetcam=true;
+			//Reset();
 		}
 	}
 }
