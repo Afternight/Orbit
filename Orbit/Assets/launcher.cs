@@ -15,10 +15,6 @@ public class launcher : MonoBehaviour {
 	private DistanceJoint2D cable;
 	private GameObject player;
 	public GameObject MainCam;
-	public float playeroffsetx=2f;
-	public float playeroffsety=1f;
-	public float prevplayeroffsetx=2f;
-	public float prevplayeroffsety=1f;
 	public Quaternion degree0 = Quaternion.Euler(0f,0f,0f);
 	public float angle=0f;
 
@@ -27,6 +23,7 @@ public class launcher : MonoBehaviour {
 	public Sprite trajectorysolid;
 	public Sprite trajectorytrans;
 	private Vector2 CamOrig=new Vector2(0,0);
+	public GameObject CamTarget;
 	// Use this for initialization
 	void Start () {
 		MainCam=GameObject.Find("Main Camera");
@@ -39,38 +36,16 @@ public class launcher : MonoBehaviour {
 	void Update () {
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		player=GameObject.Find("Rocket");
+		CamTarget=GameObject.Find("CamTarget");
 		control=controller.GetComponent<GameController>();
 		MainCam=GameObject.Find("Main Camera");
 		Cam=MainCam.GetComponent<Camera>();
 		if (control.interpolate){
-			//calculate degree
-			angle=Quaternion.Angle(degree0,player.transform.rotation);
-			//determine offset values based on degree
-			if (angle<=90f){ //first quad
-				playeroffsetx=2f;
-				playeroffsety=1f;
-			} else if ((angle>90f) &&(angle<=180f)){ //second bottom right
-				playeroffsetx=2f;
-				playeroffsety=-1f;
-			} else if ((angle>180f)&&(angle<=270f)){ //third bottom left
-				playeroffsetx=-2f;
-				playeroffsety=-1f;
-			} else if ((angle>270f)&&(angle<=359f)){ //fourth top left
-				playeroffsetx=-2f;
-				playeroffsety=1f;
-			}
-			//if offset values are not the same as previous then declare unhooked
-			if ((playeroffsetx!=prevplayeroffsetx)&&(playeroffsety!=prevplayeroffsety)){
-				control.camhook=false;
-			}
-			//store offset values in previous
-			prevplayeroffsetx=playeroffsetx;
-			prevplayeroffsety=playeroffsety;
-			if ((MainCam.transform.position.x!=(player.transform.position.x+playeroffsetx))||(MainCam.transform.position.y!=(player.transform.position.y+playeroffsety))){
+			if ((MainCam.transform.position.x!=CamTarget.transform.position.x)||(MainCam.transform.position.y!=CamTarget.transform.position.y)){
 				maincam2.x=MainCam.transform.position.x;
 				maincam2.y=MainCam.transform.position.y;
-				player2.x=player.transform.position.x+playeroffsetx;
-				player2.y=player.transform.position.y+playeroffsety;
+				player2.x=CamTarget.transform.position.x;
+				player2.y=CamTarget.transform.position.y;
 				inter=Vector2.Lerp(maincam2,player2,0.1f);
 				inter3.x=inter.x;
 				inter3.y=inter.y;
@@ -79,11 +54,11 @@ public class launcher : MonoBehaviour {
 			if (Cam.orthographicSize!=PlayerPrefs.GetFloat("PlayZoom")){
 				Cam.orthographicSize=Mathf.Lerp (Cam.orthographicSize,PlayerPrefs.GetFloat("PlayZoom"),0.1f);
 			}
-			differencex=MainCam.transform.position.x - (player.transform.position.x+playeroffsetx);
-			differencey=MainCam.transform.position.y - (player.transform.position.y+playeroffsety);
+			differencex=MainCam.transform.position.x - CamTarget.transform.position.x;
+			differencey=MainCam.transform.position.y - CamTarget.transform.position.y;
 			if (((Mathf.Abs(differencex)<0.1f)&&(Mathf.Abs(differencey)<0.1f))||control.camhook==true){
-				pinpoint.x=player.transform.position.x+playeroffsetx;
-				pinpoint.y=player.transform.position.y+playeroffsety;
+				pinpoint.x=CamTarget.transform.position.x;
+				pinpoint.y=CamTarget.transform.position.y;
 				MainCam.transform.position=pinpoint;
 				control.camhook=true;
 			}
