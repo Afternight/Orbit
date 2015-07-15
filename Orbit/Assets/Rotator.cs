@@ -68,7 +68,7 @@ public class Rotator : MonoBehaviour {
 		speed=Mathf.Sqrt((velocity.x*velocity.x)+(velocity.y*velocity.y));
 		jointlimit.max=0f;
 		jointlimit.min=359f;
-		if ((speed<3.5f)&&(coll.collider==Base)){
+		if ((speed<1f)&&(coll.collider==Base)){
 			//contacting=coll.contacts;
 			if (control.hookedalpha==false){
 				//create first hinge joint

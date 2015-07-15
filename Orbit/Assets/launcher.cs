@@ -17,6 +17,9 @@ public class launcher : MonoBehaviour {
 	public GameObject MainCam;
 	public bool interpolate=false;
 	private Camera Cam;
+	private GameObject trajectory;
+	public Sprite trajectorysolid;
+	public Sprite trajectorytrans;
 	// Use this for initialization
 	void Start () {
 
@@ -59,14 +62,11 @@ public class launcher : MonoBehaviour {
 		player=GameObject.Find("Rocket");
 		control=controller.GetComponent<GameController>();
 		MainCam=GameObject.Find("Main Camera");
-		//find the difference between the cameras position and the rockets position
-		//divide this difference by a set integer
-		//add the divided difference over each frame till it reaches set integer
-		//do the same with zoom
+		trajectory=GameObject.Find ("Trajectory");
 		interpolate=true;
-		//yield return new WaitForSeconds(3f);
 		cable=gameObject.GetComponent<DistanceJoint2D>();
 		player.transform.SetParent(null);
+		Destroy(trajectory); // need to change to fade away possibly
 		Destroy(cable);
 		control.launched=true;
 	}

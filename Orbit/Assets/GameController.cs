@@ -14,11 +14,14 @@ public class GameController : MonoBehaviour {
 	public float orthoZoomSpeed = 0.03f;
 	public bool camhook=false;
 	public Vector2 power = new Vector2 (0,0.1f);
+	private bool draginprogress = false;
 
 	//Gameobjects
 	public GameObject player;
 	public GameObject launcher;
 	public GameObject MainCam;
+	public GameObject trajectory;
+	private launcher launchscript;
 	public Camera Cam;
 	Animator An;
 	//event system variables
@@ -48,6 +51,8 @@ public class GameController : MonoBehaviour {
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			launcher=GameObject.Find("Launcher");
+			launchscript=launcher.GetComponent<launcher>();
+			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
 		}
 		//always present declarations
@@ -79,18 +84,45 @@ public class GameController : MonoBehaviour {
 		} else {
 			if (Input.touchCount==1){
 				touch=Input.GetTouch(0);
-				if ((TargetDetect(touch)==true)&&(UiDetect(touch)==false)){ //check if touch is incident with target object
-					Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
-					diff.Normalize ();
-					float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-					launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-				} else { // if its not incident then we want to have the camera drag capability
-					Vector2 touchprev=touch.position-touch.deltaPosition;
-					Vector2 touchmagnitude=touch.position-touchprev;
-					Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
-					Cam.transform.position+=newpos;
+				if (touch.phase==TouchPhase.Began){
+					if (((TargetDetect(touch)==true)||(previousTargetDetect(touch)==true))&&(UiDetect(touch)==false)){ //check if touch is incident with target object
+						//Launcher orientation manipulation
+						if (touch.phase==TouchPhase.Began){
+							draginprogress=true;
+						}
+						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
+						diff.Normalize ();
+						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+						launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
+					} else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
+						Vector2 touchprev=touch.position-touch.deltaPosition;
+						Vector2 touchmagnitude=touch.position-touchprev;
+						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
+						Cam.transform.position+=newpos;
+						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+					}
+				} else if ((touch.phase==TouchPhase.Moved)||(touch.phase==TouchPhase.Stationary)){
+					if (draginprogress){
+						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - launcher.transform.position;
+						diff.Normalize ();
+						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+						launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
+						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
+					} else {
+						Vector2 touchprev=touch.position-touch.deltaPosition;
+						Vector2 touchmagnitude=touch.position-touchprev;
+						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
+						Cam.transform.position+=newpos;
+						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+					}
+				} else if ((touch.phase==TouchPhase.Ended)||(touch.phase==TouchPhase.Canceled)){
+					draginprogress=false;
+					trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
+					//also put in momentum code here?
 				}
 			} else if (Input.touchCount==2){ //if two fingers are touching, meaning we want to pinch zoom
+				trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
 				Touch touchZero = touch;
 				Touch touchOne = Input.GetTouch(1);
 				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
@@ -133,6 +165,27 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public bool TargetDetect(Touch touchdetect){ //currently stubbed till target implemented
-		return true;
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero);
+		//Debug.Log ("Target Position: " + hit.rigidbody);
+		if (hit.rigidbody!=null&&hit.transform.parent!=null){
+			if (hit.transform.name=="Trajectory"){
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+	public bool previousTargetDetect(Touch touchdetect){ //currently stubbed till target implemented
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.deltaPosition), Vector2.zero);
+		//Debug.Log ("Target Position: " + hit.rigidbody);
+		if (hit.rigidbody!=null&&hit.transform.parent!=null){
+			if (hit.transform.name=="Trajectory"){
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
 	}
 }
