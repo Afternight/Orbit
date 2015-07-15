@@ -14,6 +14,13 @@ Arrows to go around planets
 
 which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
 
+Launch button also needs some kind of power bar on it, unsure as of this time whether this needs to be free-floating to allow manipulation or if it can be graphically part of the launch button. Depending on the amount of this power the rocket will be launched a different amount initially. Might also need somekind of moveable limiter for the bar, as to say that on this level you cannot launch the rocket with any more power. Not to sure about this mechanic yet
+
+
+**-TARGET INDICATOR**
+
+When the final target is off screen something is going to show up on the borders of the camera pointing towards it, perhaps since we are launching to land on the earth planet this is simply the earth planet miniturised with an arrow. 
+
 
 **Menu, the planets as actual buttons **
 DONE
