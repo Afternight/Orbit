@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour {
 		//always present declarations
 		MainCam=GameObject.Find("Main Camera");
 		Cam=MainCam.GetComponent<Camera>();
-		if (launched){ //if the rocket is grounded or not, also set to false for non-playing levels
+		if ((launched==true)&&(paused==false)){ //if the rocket is grounded or not, also set to false for non-playing levels
 			if (Input.touchCount>=1){
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
 				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
@@ -92,7 +92,7 @@ public class GameController : MonoBehaviour {
 				powered=false;
 				An.SetBool("Active",false);
 			}
-		} else {
+		} else { //initiate free looks, launchercontrols
 			if (Input.touchCount==1){
 				touch=Input.GetTouch(0);
 				if (touch.phase==TouchPhase.Began){

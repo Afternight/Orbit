@@ -47,6 +47,8 @@ public class Rotator : MonoBehaviour {
 		control.launched=false;
 		//Launcher resets
 		control.interpolate=false;
+		control.resetcam=false;
+
 		//Reset strike system resets
 		control.camposready=false;
 		control.zoomready=false;
