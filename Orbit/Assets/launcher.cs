@@ -17,7 +17,7 @@ public class launcher : MonoBehaviour {
 	public GameObject MainCam;
 	public Quaternion degree0 = Quaternion.Euler(0f,0f,0f);
 	public float angle=0f;
-	public float bound=0.5f;
+	public float bound=1f;
 	private float prevcamtargx=0f;
 	private float prevcamtargy=0f;
 

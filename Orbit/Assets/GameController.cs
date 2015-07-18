@@ -19,7 +19,6 @@ public class GameController : MonoBehaviour {
 	public bool interpolate=false;
 	private float distance=0f;
 	private float scaleddistance=0f;
-	private Vector2 difference=new Vector2(0,0);
 	private Vector2 launcherpos=new Vector2(0,0);
 	private Vector3 launcherpos3=new Vector3(0,0,0);
 	private Vector3 maxscale =new Vector3(10,15,10);
@@ -174,17 +173,15 @@ public class GameController : MonoBehaviour {
 		//Debug.Log ("Target Position: " + hit.rigidbody);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
 			if (hit.transform.parent.name=="Canvas"){
-				//Debug.Log("canvaspansas");
 				return true;
 			} else {
-				//Debug.Log ("nothing");
 				return false;
 			}
 		}
 		return false;
 	}
 	
-	public bool TargetDetect(Touch touchdetect){ //currently stubbed till target implemented
+	public bool TargetDetect(Touch touchdetect){
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero);
 		//Debug.Log ("Target Position: " + hit.rigidbody);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
@@ -196,7 +193,7 @@ public class GameController : MonoBehaviour {
 		}
 		return false;
 	}
-	public bool previousTargetDetect(Touch touchdetect){ //currently stubbed till target implemented
+	public bool previousTargetDetect(Touch touchdetect){ //difference to target detect is raycasts from delta position, consider condensing
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.deltaPosition), Vector2.zero);
 		//Debug.Log ("Target Position: " + hit.rigidbody);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
@@ -216,21 +213,20 @@ public class GameController : MonoBehaviour {
 		launcher.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
 		trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
 		//calculate distance from touch to center of planet
-		launcherpos3=transform.TransformPoint(launcher.transform.position);
+		launcherpos3=launcher.transform.position;
 		launcherpos.x=launcherpos3.x;
 		launcherpos.y=launcherpos3.y;
-		difference=touch.position-launcherpos;
-		distance=difference.magnitude;
-		Debug.Log (distance);
+		distance=Vector2.Distance(launcherpos3,Camera.main.ScreenToWorldPoint(touch.position));
+		Debug.Log ("distance"+distance);
 		//set a max
-		if (Mathf.Abs(distance)>=400f){ //need to find the right value for this
+		if (Mathf.Abs(distance)>=15f){ //need to find the right value for this
 			trajectory.transform.localScale=maxscale;
-		} else if (Mathf.Abs(distance)<=50f){ //set a min
+		} else if (Mathf.Abs(distance)<=1f){ //set a min
 			trajectory.transform.localScale=minscale;
 		} else {// if inbetween calculate scale factor by percentage of max reached
-			scaleddistance=Mathf.Abs(distance)-50f;
-			scaleddistance=scaleddistance/400f; // calculate scale
-			trajscale.y=scaleddistance*15f; //add minimum of 2 onto existing
+			scaleddistance=Mathf.Abs(distance);
+			scaleddistance=scaleddistance/15f; // calculate scale
+			trajscale.y=scaleddistance*15f+1f; //add minimum of 2 onto existing
 			trajectory.transform.localScale=trajscale;
 		}
 	}
