@@ -15,25 +15,48 @@ public class GameController : MonoBehaviour {
 	public bool camhook=false;
 	public Vector2 power = new Vector2 (0,0.1f);
 	private bool draginprogress = false;
-	public bool resetcam=false;
-	public bool interpolate=false;
 	private float distance=0f;
 	private float scaleddistance=0f;
-	private Vector2 launcherpos=new Vector2(0,0);
 	private Vector3 launcherpos3=new Vector3(0,0,0);
 	private Vector3 maxscale =new Vector3(10,15,10);
 	private Vector3 minscale =new Vector3(10,3,10);
 	private Vector3 trajscale= new Vector3 (10,0,10);
 
+	//Cam controls
+	private bool CamMode=false; //where false==dynacam,true=freecam.
+
+	//DynaCam
+	public GameObject MainCam;
+	public Camera Cam;
+	public float differencex=0f;
+	public float differencey=0f;
+	public Vector3 pinpoint= new Vector3 (0,0,-10f); //where -10f is cam zoom pos
+	public Vector3 inter3 = new Vector3(0,0,-10f);
+	public Vector2 inter = new Vector2 (0,0);
+	public Vector2 maincam2 = new Vector2 (0,0);
+	public Vector2 player2= new Vector2(0,0);
+	public Vector3 CamOrig= new Vector3 (0,0,-10f);
+	public float CamOrigZoom=10f;
+
+	//DynaCam inputs
+	public Vector3 CamTarget = new Vector3 (0,0,0);
+	public float CamZoom=0f;
+	public float CamScale=0.1f;
+	public float CamBound=0.2f;
+	
+	//Arrays
+	private float[] fuelinitials;
+
 	//Gameobjects
+	public GameObject PlayerCam;
 	public GameObject player;
 	public GameObject launcher;
-	public GameObject MainCam;
 	public GameObject trajectory;
 	public GameObject planet;
 	private Rotator planetscript;
 	private launcher launchscript;
-	public Camera Cam;
+	public GameObject MainCamupdate;
+	public Camera Camupdate;
 	Animator An;
 
 	//Reset strikes
@@ -41,7 +64,6 @@ public class GameController : MonoBehaviour {
 	public bool camposready=false;
 	public bool rocketdestroyed=false;
 	//event system variables
-
 	private Touch touch;
 
 	void Awake () {
@@ -51,6 +73,14 @@ public class GameController : MonoBehaviour {
 		} else if (control!=this){
 			Destroy(gameObject);
 		}
+		//set fuel array
+		//level indexs of 0-4 reserved for nonplayables
+		//0 is main menu
+		//1 is level select
+		//2 is options
+
+		//fuelinitials[5]=200f; set values for levels here
+		//also store initial camera locations
 	}
 
 	void Start () {
@@ -58,14 +88,35 @@ public class GameController : MonoBehaviour {
 		if (PlayerPrefs.GetFloat("PlayZoom")==0f){
 			PlayerPrefs.SetFloat("PlayZoom",4f);
 		}
+		//set menu origs
+		MainCamupdate=GameObject.Find("Main Camera");
+		Camupdate=MainCamupdate.GetComponent<Camera>();
+		CamOrig=MainCamupdate.transform.position;
+		CamOrigZoom=Camupdate.orthographicSize;
+	}
+
+	void OnLevelWasLoaded(int level) {
+		//store original camera size
+		Debug.Log(level);
+		MainCamupdate=GameObject.Find("Main Camera");
+		Camupdate=MainCamupdate.GetComponent<Camera>();
+		CamOrig=MainCamupdate.transform.position;
+		CamOrigZoom=Camupdate.orthographicSize;
+		CamTarget=CamOrig;
+		CamZoom=CamOrigZoom;
+		CamBound=0.01f;
 	}
 
 	// Update is called once per frame
 	void Update () {
+		//if needing panning opening
+		//set cam at earth
+		//do we just want to lerp?
 		//Event system
 		if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
+			PlayerCam=GameObject.Find ("CamTarget");
 			planet=GameObject.Find("Mars");
 			planetscript=planet.GetComponent<Rotator>();
 			launcher=GameObject.Find("Launcher");
@@ -73,10 +124,13 @@ public class GameController : MonoBehaviour {
 			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
 		}
-		//always present declarations
-		MainCam=GameObject.Find("Main Camera");
-		Cam=MainCam.GetComponent<Camera>();
-		if ((launched==true)&&(paused==false)){ //if the rocket is grounded or not, also set to false for non-playing levels
+		//always present items
+		MainCamupdate=GameObject.Find("Main Camera");
+		Camupdate=MainCamupdate.GetComponent<Camera>();
+		if ((launched==true)&&(paused==false)&&(rocketdestroyed==false)){ //if the rocket is grounded or not, also set to false for non-playing levels
+			CamTarget=PlayerCam.transform.position; //set dynacam values for launched
+			CamZoom=PlayerPrefs.GetFloat("PlayZoom");
+			CamBound=0.4f;
 			if (Input.touchCount>=1){
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
 				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
@@ -113,7 +167,7 @@ public class GameController : MonoBehaviour {
 						Vector2 touchprev=touch.position-touch.deltaPosition;
 						Vector2 touchmagnitude=touch.position-touchprev;
 						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
-						Cam.transform.position+=newpos;
+						Camupdate.transform.position+=newpos;
 					}
 				} else if ((touch.phase==TouchPhase.Moved)||(touch.phase==TouchPhase.Stationary)){
 					if (draginprogress){
@@ -122,7 +176,7 @@ public class GameController : MonoBehaviour {
 						Vector2 touchprev=touch.position-touch.deltaPosition;
 						Vector2 touchmagnitude=touch.position-touchprev;
 						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
-						Cam.transform.position+=newpos;
+						Camupdate.transform.position+=newpos;
 					}
 				} else if ((touch.phase==TouchPhase.Ended)||(touch.phase==TouchPhase.Canceled)){
 					draginprogress=false;
@@ -145,12 +199,23 @@ public class GameController : MonoBehaviour {
 
 				float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
 				if (Mathf.Abs(deltaMagnitudeDiff*orthoZoomSpeed)>=0.1f){ //ensure change is substantial to prevent flickering
-					Cam.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+					Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
 				}
-				Cam.orthographicSize = Mathf.Max(Cam.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+				Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
 			}
 		}
-
+		//Debug.Log(CamMode);
+		if (CamMode==false){
+		//DynaCamprotections
+			if (CamTarget==Vector3.zero){
+				CamTarget=CamOrig;
+			}
+			if (CamZoom==0f){
+				CamZoom=CamOrigZoom;
+			}
+			//call DynaCam
+			DynaCam(CamTarget,CamZoom,CamScale,CamBound);
+		}
 		//reset strike system
 		if ((zoomready==true)&&(camposready==true)&&(rocketdestroyed==true)){
 			planetscript.Reset();
@@ -214,8 +279,6 @@ public class GameController : MonoBehaviour {
 		trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorysolid;
 		//calculate distance from touch to center of planet
 		launcherpos3=launcher.transform.position;
-		launcherpos.x=launcherpos3.x;
-		launcherpos.y=launcherpos3.y;
 		distance=Vector2.Distance(launcherpos3,Camera.main.ScreenToWorldPoint(touch.position));
 		Debug.Log ("distance"+distance);
 		//set a max
@@ -226,8 +289,48 @@ public class GameController : MonoBehaviour {
 		} else {// if inbetween calculate scale factor by percentage of max reached
 			scaleddistance=Mathf.Abs(distance);
 			scaleddistance=scaleddistance/15f; // calculate scale
-			trajscale.y=scaleddistance*15f+1f; //add minimum of 2 onto existing
+			trajscale.y=scaleddistance*15f+1f; //add minimum of 1 onto existing
 			trajectory.transform.localScale=trajscale;
+		}
+	}
+
+	private void DynaCam(Vector3 Target, float Zoom, float scale, float bound){
+		MainCam=GameObject.Find("Main Camera");
+		Cam=MainCam.GetComponent<Camera>();
+		if ((MainCam.transform.position.x!=Target.x)||(MainCam.transform.position.y!=Target.y)){ //ensure transform
+			maincam2.x=MainCam.transform.position.x;
+			maincam2.y=MainCam.transform.position.y;
+			player2.x=Target.x;
+			player2.y=Target.y;
+			inter=Vector2.Lerp(maincam2,player2,scale);
+			inter3.x=inter.x;
+			inter3.y=inter.y;
+			camposready=false;
+			MainCam.transform.position=inter3;
+		} else if ((MainCam.transform.position.x==Target.x)&&(MainCam.transform.position.y==Target.y)){
+			camposready=true;
+			camhook=true;
+		}
+		if (Cam.orthographicSize!=Zoom){ //ensure zoom
+			Cam.orthographicSize=Mathf.Lerp (Cam.orthographicSize,Zoom,0.1f);
+			zoomready=false;
+		} else if (Cam.orthographicSize==Zoom){
+			zoomready=true;
+		} 
+		if (Mathf.Abs(Zoom-Cam.orthographicSize)<bound){
+			Cam.orthographicSize=Zoom;
+			zoomready=true;
+		}
+		differencex=MainCam.transform.position.x - Target.x;
+		differencey=MainCam.transform.position.y - Target.y;
+		if (((Mathf.Abs(differencex)<bound)&&(Mathf.Abs(differencey)<bound))||camhook==true){
+			pinpoint.x=Target.x;
+			pinpoint.y=Target.y;
+			MainCam.transform.position=pinpoint;
+			camposready=true;
+			camhook=true;
+		} else if ((Mathf.Abs(differencex)>bound)||(Mathf.Abs(differencey)>bound)){
+			camhook=false;
 		}
 	}
 }

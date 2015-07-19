@@ -41,15 +41,13 @@ public class Rotator : MonoBehaviour {
 		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
+
 		control.fuel=200f; //here make reference to level data script for fuel level to reset to
+		//control.fuel=control.fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
 		control.hookedalpha=false;
 		control.camhook=false;
 		control.launched=false;
 		control.time=0f;
-
-		//Launcher resets
-		control.interpolate=false;
-		control.resetcam=false;
 
 		//Reset strike system resets
 		control.camposready=false;
@@ -92,8 +90,11 @@ public class Rotator : MonoBehaviour {
 		} else {
 			An.SetBool("Collision",true);
 			control.rocketdestroyed=true;
-			control.interpolate=false;
-			control.resetcam=true;
+			control.CamTarget=control.CamOrig;
+			control.CamZoom=control.CamOrigZoom;
+			control.CamScale=0.2f;
+			control.camhook=false;
+
 			//Reset();
 		}
 	}

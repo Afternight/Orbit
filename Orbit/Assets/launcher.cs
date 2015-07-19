@@ -21,12 +21,12 @@ public class launcher : MonoBehaviour {
 	private float prevcamtargx=0f;
 	private float prevcamtargy=0f;
 
+	private GameObject PlayerCam;
 	private Camera Cam;
 	private GameObject trajectory;
 	public Sprite trajectorysolid;
 	public Sprite trajectorytrans;
 	private Vector2 CamOrig=new Vector2(0,0);
-	public GameObject CamTarget;
 	// Use this for initialization
 	void Start () {
 		MainCam=GameObject.Find("Main Camera");
@@ -37,7 +37,7 @@ public class launcher : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		controller=GameObject.Find ("GameController"); //finds gamecontroller
+		/*controller=GameObject.Find ("GameController"); //finds gamecontroller
 		player=GameObject.Find("Rocket");
 		CamTarget=GameObject.Find("CamTarget");
 		control=controller.GetComponent<GameController>();
@@ -93,16 +93,21 @@ public class launcher : MonoBehaviour {
 				Cam.orthographicSize=10f;
 				control.zoomready=true;
 			}
-		}
+		}*/
 	}
 
 	public void Launch(){
+		PlayerCam=GameObject.Find ("CamTarget");
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		player=GameObject.Find("Rocket");
 		control=controller.GetComponent<GameController>();
 		MainCam=GameObject.Find("Main Camera");
 		trajectory=GameObject.Find ("Trajectory");
-		control.interpolate=true;
+		control.camhook=false;
+		control.CamTarget=PlayerCam.transform.position;
+		control.CamBound=0.2f;
+		control.CamScale=0.1f;
+		control.CamZoom=PlayerPrefs.GetFloat("PlayZoom");
 		cable=gameObject.GetComponent<DistanceJoint2D>();
 		player.transform.SetParent(null);
 		Destroy(trajectory); // need to change to fade away possibly
