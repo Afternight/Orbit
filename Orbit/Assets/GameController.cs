@@ -50,12 +50,13 @@ public class GameController : MonoBehaviour {
 	public GameObject player;
 	public GameObject launcher;
 	public GameObject trajectory;
-	public GameObject planet;
-	private Rotator planetscript;
+	public GameObject Earth;
+	public GameObject Indicator;
 	private launcher launchscript;
 	public GameObject MainCamupdate;
 	public Camera Camupdate;
 	Animator An;
+	public BoxCollider2D boxcoll;
 
 	//Reset strikes
 	public bool zoomready=false;
@@ -72,6 +73,7 @@ public class GameController : MonoBehaviour {
 							//5 = Finish/Success
 							//6 = Paused
 							//7 = Destroyed
+	public bool indicatorneeded=true;
 	public bool initial=true;
 	public bool initial0=true;
 	public bool initial1=true;
@@ -95,9 +97,9 @@ public class GameController : MonoBehaviour {
 
 	void Start () {
 		//set player preferences if they are not already set
-		//if (PlayerPrefs.GetFloat("PlayZoom")==0f){
+		if (PlayerPrefs.GetFloat("PlayZoom")==0f){
 			PlayerPrefs.SetFloat("PlayZoom",4f); //for now constant at 4 for testing
-		//}
+		}
 		//set menu origs
 		MainCamupdate=GameObject.Find("Main Camera");
 		Camupdate=MainCamupdate.GetComponent<Camera>();
@@ -121,20 +123,23 @@ public class GameController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//Event system
+		//always present items
+		MainCamupdate=GameObject.Find("Main Camera");
+		Camupdate=MainCamupdate.GetComponent<Camera>();
 		if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			PlayerCam=GameObject.Find ("CamTarget");
-			planet=GameObject.Find("Mars");
-			planetscript=planet.GetComponent<Rotator>();
+			Earth=GameObject.Find("Earth");
+			Indicator=GameObject.Find ("Indicator");
 			launcher=GameObject.Find("Launcher");
-			launchscript=launcher.GetComponent<launcher>();
+			launchscript=launcher.GetComponent<launcher>(); //WHY IS THIS ONE TAKING SO LONG TO LOAD OR SOMETHING
 			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
+			boxcoll=MainCamupdate.GetComponent<BoxCollider2D>();
+		} else if (Application.loadedLevel==0){ //menu exception
+			GameStatus=1;
 		}
-		//always present items
-		MainCamupdate=GameObject.Find("Main Camera");
-		Camupdate=MainCamupdate.GetComponent<Camera>();
 		if (GameStatus==0){ //Starting
 			CamMode=false;
 			if (initial0){ //to prevent multiple invokes
@@ -194,9 +199,9 @@ public class GameController : MonoBehaviour {
 				Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
 			}
 		} else if (GameStatus==2){ // Launching
+			CancelInvoke("CamStart"); // incase time has been skipped
 			CamMode=false; //back to the dynacam
 			CamTarget=PlayerCam.transform.position;
-			Debug.Log ("initial"+initial);
 			if (initial){
 				CamZoom=PlayerPrefs.GetFloat("PlayZoom");
 				initial=false;
@@ -205,7 +210,6 @@ public class GameController : MonoBehaviour {
 			}
 			CamBound=0.02f;
 			CamScale=0.1f;
-			Debug.Log ("zoom"+CamZoom);
 		} else if (GameStatus==3){ //Launched
 			CamMode=false;
 			CamTarget=PlayerCam.transform.position; //set dynacam values for launched
@@ -258,9 +262,8 @@ public class GameController : MonoBehaviour {
 			Debug.LogError("Invalid GameStatus");
 		}
 
-		//Debug.Log(CamMode);
 		if (CamMode==false){
-		//DynaCamprotections
+			//DynaCamprotections
 			if (CamTarget==Vector3.zero){
 				CamTarget=CamOrig;
 			}
@@ -275,10 +278,22 @@ public class GameController : MonoBehaviour {
 			time=time+1*Time.deltaTime;
 		}
 		Debug.Log ("GameStatus "+GameStatus);
+
+		//Cam collider pointer
+		//can functionalise and increase for multiple indicators
+		if (inLevel&&indicatorneeded){
+			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-5f,(2f*Camupdate.orthographicSize)-5f);
+			RaycastHit2D hit=Physics2D.Linecast(Earth.transform.position,MainCamupdate.transform.position,Physics2D.DefaultRaycastLayers,-Mathf.Infinity,-9);
+			if (hit.rigidbody!=null){
+				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.5f,Camupdate.orthographicSize*0.5f,1f);;//unsure of the value best suited here, but this code is ready for graphics pass
+				Indicator.transform.position=hit.point;
+			}
+		}
 	}
 	public void SceneSwitchers (int target) { //consider using this for level load stat
 		if (target>=1){
 			inLevel=true;
+			GameStatus=0;
 		} else {
 			inLevel=false;
 		}
@@ -382,16 +397,14 @@ public class GameController : MonoBehaviour {
 			camhook=false;
 		}
 		if (revoke&&camposready&&zoomready){
-			Debug.Log ("revoking");
 			CamMode=true;//relinquish
 			GameStatus=1;
 			Revoke=false; //remove the future relinquish
 		}
-		Debug.Log ("cam pos "+camposready);
-		Debug.Log ("zoomready "+zoomready);
 	}
 
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
+		//Debug.LogError("CamStart has beencalled"); magical line that removes bugs when put in the general vicinity for some reason
 		PlayerCam=GameObject.Find ("CamTarget");
 		camhook=false;
 		CamTarget=PlayerCam.transform.position;
@@ -399,11 +412,9 @@ public class GameController : MonoBehaviour {
 		CamScale=0.1f;
 		CamZoom=6f;
 		Revoke=true;
-		Debug.Log ("I am still running");
 	}
 
 	public void ResetControl(){
-		Debug.LogError("ResetControl");
 		fuel=200f; //here make reference to level data script for fuel level to reset to
 		//fuel=fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
 		hookedalpha=false;
@@ -427,6 +438,6 @@ public class GameController : MonoBehaviour {
 
 	public float ObtainScale(){
 		//return trajectory.transform.localScale.y;
-		return 0.5f;
+		return 0.5f; //stubbed for testing and balancing
 	}
 }
