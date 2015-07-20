@@ -19,46 +19,30 @@ public class Rotator : MonoBehaviour {
 	Animator An;
 	// Use this for initialization
 	void Start () {
-		y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
+		//DontDestroyOnLoad(gameObject);
+		//y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		if(control.paused==false){ 
+		if(control.GameStatus!=6){ 
 			y=y+0.1f;
 			transform.rotation = Quaternion.Euler (0f, 0f, y);
 		}
-		if (control.powered==true&&control.hookedalpha==true){
+		/*if (control.powered==true&&control.hookedalpha==true){
 			Destroy(joint);
 			player.transform.SetParent(null);
 			control.hookedalpha=false;
-		}
+		}*/
 	}
-	public void Reset(){
-		PlayerPrefs.SetFloat("Rotate",y); //stores current rotation value
+	public void Reset(){ //legacy for reset button and rotate storage at the moment
+		//PlayerPrefs.SetFloat("Rotate",y); //stores current rotation value
 		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-
-		control.fuel=200f; //here make reference to level data script for fuel level to reset to
-		//control.fuel=control.fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
-		control.hookedalpha=false;
-		control.camhook=false;
-		control.launched=false;
-		control.time=0f;
-
-		//Reset strike system resets
-		control.camposready=false;
-		control.zoomready=false;
-		control.rocketdestroyed=false;
-
-		Application.LoadLevel (Application.loadedLevel); //resets level
-		if (control.paused==true){
-			control.paused=false;
-			Time.timeScale=1;
-		}
+		control.ResetControl();
 	}
 	void OnCollisionEnter2D(Collision2D coll){
 		controller=GameObject.Find ("GameController");
@@ -89,12 +73,8 @@ public class Rotator : MonoBehaviour {
 			}
 		} else {
 			An.SetBool("Collision",true);
-			control.rocketdestroyed=true;
-			control.CamTarget=control.CamOrig;
-			control.CamZoom=control.CamOrigZoom;
-			control.CamScale=0.2f;
 			control.camhook=false;
-
+			control.GameStatus=7;
 			//Reset();
 		}
 	}

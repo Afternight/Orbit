@@ -4,114 +4,51 @@ using UnityEngine.EventSystems;
 
 public class launcher : MonoBehaviour {
 	private GameObject controller;
-	public float differencex=0f;
-	public float differencey=0f;
-	public Vector3 pinpoint= new Vector3 (0,0,-10f); //where -10f is cam zoom pos
-	public Vector3 inter3 = new Vector3(0,0,-10f);
-	public Vector2 inter = new Vector2 (0,0);
-	public Vector2 maincam2 = new Vector2 (0,0);
-	public Vector2 player2= new Vector2(0,0);
 	private GameController control;
 	private DistanceJoint2D cable;
 	private GameObject player;
-	public GameObject MainCam;
-	public Quaternion degree0 = Quaternion.Euler(0f,0f,0f);
-	public float angle=0f;
-	public float bound=1f;
-	private float prevcamtargx=0f;
-	private float prevcamtargy=0f;
-
-	private GameObject PlayerCam;
-	private Camera Cam;
+	private float force=0f;
+	private Vector2 power = new Vector2 (0,0);
+	
 	private GameObject trajectory;
 	public Sprite trajectorysolid;
 	public Sprite trajectorytrans;
-	private Vector2 CamOrig=new Vector2(0,0);
 	// Use this for initialization
 	void Start () {
-		MainCam=GameObject.Find("Main Camera");
-		Cam=MainCam.GetComponent<Camera>();
-		CamOrig.x=MainCam.transform.position.x;
-		CamOrig.y=MainCam.transform.position.y;
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		/*controller=GameObject.Find ("GameController"); //finds gamecontroller
-		player=GameObject.Find("Rocket");
-		CamTarget=GameObject.Find("CamTarget");
+
+	}
+	private void LaunchTimed(){
+		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		MainCam=GameObject.Find("Main Camera");
-		Cam=MainCam.GetComponent<Camera>();
-		if (control.interpolate){
-			if ((MainCam.transform.position.x!=CamTarget.transform.position.x)||(MainCam.transform.position.y!=CamTarget.transform.position.y)){
-				maincam2.x=MainCam.transform.position.x;
-				maincam2.y=MainCam.transform.position.y;
-				player2.x=CamTarget.transform.position.x;
-				player2.y=CamTarget.transform.position.y;
-				inter=Vector2.Lerp(maincam2,player2,0.1f);
-				inter3.x=inter.x;
-				inter3.y=inter.y;
-				MainCam.transform.position=inter3;
-			}
-			if (Cam.orthographicSize!=PlayerPrefs.GetFloat("PlayZoom")){
-				Cam.orthographicSize=Mathf.Lerp (Cam.orthographicSize,PlayerPrefs.GetFloat("PlayZoom"),0.1f);
-			}
-			differencex=MainCam.transform.position.x - CamTarget.transform.position.x;
-			differencey=MainCam.transform.position.y - CamTarget.transform.position.y;
-			if (((Mathf.Abs(differencex)<bound)&&(Mathf.Abs(differencey)<bound))||control.camhook==true){
-				pinpoint.x=CamTarget.transform.position.x;
-				pinpoint.y=CamTarget.transform.position.y;
-				MainCam.transform.position=pinpoint;
-				control.camhook=true;
-			}
-		} else if (control.resetcam){
-			if ((MainCam.transform.position.x!=CamOrig.x)||(MainCam.transform.position.y!=CamOrig.y)){
-				maincam2.x=MainCam.transform.position.x;
-				maincam2.y=MainCam.transform.position.y;
-				inter=Vector2.Lerp (maincam2,CamOrig,0.2f);
-				inter3.x=inter.x;
-				inter3.y=inter.y;
-				MainCam.transform.position=inter3;
-			} else if ((MainCam.transform.position.x==CamOrig.x)&&(MainCam.transform.position.y==CamOrig.y)){
-				control.camposready=true;
-			}
-			differencex=MainCam.transform.position.x - CamOrig.x;
-			differencey=MainCam.transform.position.y - CamOrig.y;
-			if ((Mathf.Abs(differencex)<0.1f)&&(Mathf.Abs(differencey)<0.1f)){
-				pinpoint.x=CamOrig.x;
-				pinpoint.y=CamOrig.y;
-				MainCam.transform.position=pinpoint;
-				control.camposready=true;
-			}
-			if (Cam.orthographicSize!=10f){
-				Cam.orthographicSize=Mathf.Lerp (Cam.orthographicSize,10f,0.2f);
-			} else if (Cam.orthographicSize==10f){
-				control.zoomready=true;
-			}
-			if (Mathf.Abs(10f-Cam.orthographicSize)<0.1f){
-				Cam.orthographicSize=10f;
-				control.zoomready=true;
-			}
-		}*/
+		player=GameObject.Find("Rocket");
+		trajectory=GameObject.Find ("Trajectory");
+		if (control.camposready){
+			cable=gameObject.GetComponent<DistanceJoint2D>();
+			player.transform.SetParent(null);
+			Destroy(trajectory); // need to change to fade away possibly
+			Destroy(cable);
+			force=control.ObtainScale();
+			power.y=force;
+			Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
+			x.AddRelativeForce (power, ForceMode2D.Impulse);
+			control.GameStatus=3;
+			//control.camhook=false;
+			CancelInvoke("LaunchTimed");
+		}
 	}
 
 	public void Launch(){
-		PlayerCam=GameObject.Find ("CamTarget");
+		//put series of invokes at different intervals for countdown
+		Invoke ("LaunchTimed",3);
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
-		player=GameObject.Find("Rocket");
 		control=controller.GetComponent<GameController>();
-		MainCam=GameObject.Find("Main Camera");
-		trajectory=GameObject.Find ("Trajectory");
+		control.GameStatus=2;
 		control.camhook=false;
-		control.CamTarget=PlayerCam.transform.position;
-		control.CamBound=0.2f;
-		control.CamScale=0.1f;
-		control.CamZoom=PlayerPrefs.GetFloat("PlayZoom");
-		cable=gameObject.GetComponent<DistanceJoint2D>();
-		player.transform.SetParent(null);
-		Destroy(trajectory); // need to change to fade away possibly
-		Destroy(cable);
-		control.launched=true;
+		//should add disabling of certain aspects
 	}
 }

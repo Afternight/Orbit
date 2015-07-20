@@ -16,6 +16,8 @@ public class Player : MonoBehaviour {
 	private GameController control;
 	private Rigidbody2D center;
 
+	//Pause
+	private int previousstate=0;
 	// Use this for initialization
 	void Start () {
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
@@ -47,11 +49,12 @@ public class Player : MonoBehaviour {
 	public void Pause(){
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		if (control.paused==false){
-			control.paused=true;
+		if (control.GameStatus!=6){
+			previousstate=control.GameStatus;
+			control.GameStatus=6;
 			Time.timeScale=0;
-		} else if (control.paused==true) {
-			control.paused=false;
+		} else if (control.GameStatus==6) {
+			control.GameStatus=previousstate;
 			Time.timeScale=1;
 		}
 	}

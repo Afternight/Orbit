@@ -15,7 +15,7 @@ public class FuelPower : MonoBehaviour {
 	void Update () {
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		if (control.paused==false){
+		if (control.GameStatus==6){
 			y=y+0.1f;
 			transform.rotation = Quaternion.Euler (0f, 0f, y);
 		}
