@@ -6,11 +6,11 @@ CHECKLIST
 GRAPHICAL ELEMENTS
 
 
-**- URGENT FUEL BAR**
+**- URGENT FUEL BAR** BACKING DONE
 Fuel bar needs (seperate) bar graphic, as in the loading bar bit is seperated from the backdrop etc
 Arrows to go around planets 
 
-**- LAUNCH BUTTON **
+**- LAUNCH BUTTON ** SEMI DONE
 
 which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
 
@@ -33,7 +33,7 @@ like a really small asteroid  that is where the rocket starts
 object that finishes the level when you touch it
 
 
-**- DESTRUCTION ANIMATION**
+**- DESTRUCTION ANIMATION** DONE
 (sprite sheet from rocket)
 
 
