@@ -10,7 +10,7 @@ GRAPHICAL ELEMENTS
 Fuel bar needs (seperate) bar graphic, as in the loading bar bit is seperated from the backdrop etc
 Arrows to go around planets 
 
-**- LAUNCH BUTTON ** SEMI DONE
+**- LAUNCH BUTTON **  DONE
 
 which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
 
@@ -25,7 +25,7 @@ When the final target is off screen something is going to show up on the borders
 **Menu, the planets as actual buttons **
 DONE
 
-**- STARTING ASTEROID **
+**- STARTING ASTEROID ** DONE
 like a really small asteroid  that is where the rocket starts
 
 
