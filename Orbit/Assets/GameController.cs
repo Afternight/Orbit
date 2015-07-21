@@ -300,7 +300,7 @@ public class GameController : MonoBehaviour {
 		Application.LoadLevel(target);
 	}
 	public bool UiDetect(Touch touchdetect){
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
 			if (hit.transform.parent.name=="Canvas"){
 				return true;
@@ -312,7 +312,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public bool TargetDetect(Touch touchdetect){
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
 			if (hit.transform.name=="Trajectory"){
 				return true;
@@ -323,7 +323,7 @@ public class GameController : MonoBehaviour {
 		return false;
 	}
 	public bool previousTargetDetect(Touch touchdetect){ //difference to target detect is raycasts from delta position, consider condensing
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.deltaPosition), Vector2.zero);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.deltaPosition), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
 			if (hit.transform.name=="Trajectory"){
 				return true;
