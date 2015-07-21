@@ -22,14 +22,13 @@ Launch button also needs some kind of power bar on it, unsure as of this time wh
 When the final target is off screen something is going to show up on the borders of the camera pointing towards it, perhaps since we are launching to land on the earth planet this is simply the earth planet miniturised with an arrow. 
 
 
-**Menu, the planets as actual buttons **
-DONE
+**Menu, the planets as actual buttons ** DONE
 
 **- STARTING ASTEROID ** DONE
 like a really small asteroid  that is where the rocket starts
 
 
-**Finishing object**
+**Finishing object** DONE
 object that finishes the level when you touch it
 
 
@@ -37,7 +36,7 @@ object that finishes the level when you touch it
 (sprite sheet from rocket)
 
 
-**- PAUSE / RESTART BUTTONS**
+**- PAUSE / RESTART BUTTONS** DONE
 
 
 **- PAUSE MENU**
