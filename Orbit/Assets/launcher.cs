@@ -47,6 +47,7 @@ public class launcher : MonoBehaviour {
 		Invoke ("LaunchTimed",3);
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
+		control.FuelUi.SetTrigger(control.animID);
 		control.GameStatus=2;
 		control.camhook=false;
 		//should add disabling of certain aspects

@@ -1,0 +1,264 @@
+fileFormatVersion: 2
+guid: b37d516de2aa37f40a8ca5599cfc1c4b
+timeCreated: 1437522730
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: launch to fuel sprite sheet_0
+    21300002: launch to fuel sprite sheet_1
+    21300004: launch to fuel sprite sheet_2
+    21300006: launch to fuel sprite sheet_3
+    21300008: launch to fuel sprite sheet_4
+    21300010: launch to fuel sprite sheet_5
+    21300012: launch to fuel sprite sheet_6
+    21300014: launch to fuel sprite sheet_7
+    21300016: launch to fuel sprite sheet_8
+    21300018: launch to fuel sprite sheet_9
+    21300020: launch to fuel sprite sheet_10
+    21300022: launch to fuel sprite sheet_11
+    21300024: launch to fuel sprite sheet_12
+    21300026: launch to fuel sprite sheet_13
+    21300028: launch to fuel sprite sheet_14
+    21300030: launch to fuel sprite sheet_15
+    21300032: launch to fuel sprite sheet_16
+    21300034: launch to fuel sprite sheet_17
+    21300036: launch to fuel sprite sheet_18
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: launch to fuel sprite sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 7025
+        width: 3077
+        height: 514
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 6547
+        width: 3077
+        height: 460
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 6124
+        width: 3077
+        height: 405
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5733
+        width: 3077
+        height: 372
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5376
+        width: 3077
+        height: 339
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 5023
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4666
+        width: 3077
+        height: 327
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 4301
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3926
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3550
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3160
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2781
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2402
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2008
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1603
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1198
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 804
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 410
+        width: 3077
+        height: 328
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: launch to fuel sprite sheet_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 3077
+        height: 326
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

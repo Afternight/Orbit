@@ -57,6 +57,10 @@ public class GameController : MonoBehaviour {
 	public Camera Camupdate;
 	Animator An;
 	public BoxCollider2D boxcoll;
+	public GameObject FuelUiObject;
+	public Animator FuelUi;
+	public int animID;
+	public int animIDreset;
 
 	//Reset strikes
 	public bool zoomready=false;
@@ -114,6 +118,8 @@ public class GameController : MonoBehaviour {
 		Camupdate=MainCamupdate.GetComponent<Camera>();
 		CamOrig=MainCamupdate.transform.position;
 		CamOrigZoom=Camupdate.orthographicSize;
+		FuelUiObject=GameObject.Find("FuelUI");
+		FuelUi=FuelUiObject.GetComponent<Animator>();
 		CamTarget=CamOrig;
 		CamZoom=CamOrigZoom;
 		CamBound=0.01f;
@@ -255,6 +261,8 @@ public class GameController : MonoBehaviour {
 			CamZoom=CamOrigZoom;
 			CamScale=0.1f;
 			CamBound=0.02f;
+			FuelUi.SetTrigger(animIDreset); //trigger reset animation
+			FuelUi.ResetTrigger(animID);
 			if (camposready&&zoomready){
 				ResetControl();
 			}
@@ -282,10 +290,10 @@ public class GameController : MonoBehaviour {
 		//Cam collider pointer
 		//can functionalise and increase for multiple indicators
 		if (inLevel&&indicatorneeded){
-			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-5f,(2f*Camupdate.orthographicSize)-5f);
+			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-1.5f,(2f*Camupdate.orthographicSize)-1.5f);
 			RaycastHit2D hit=Physics2D.Linecast(Earth.transform.position,MainCamupdate.transform.position,Physics2D.DefaultRaycastLayers,-Mathf.Infinity,-9);
 			if (hit.rigidbody!=null){
-				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.5f,Camupdate.orthographicSize*0.5f,1f);;//unsure of the value best suited here, but this code is ready for graphics pass
+				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.02f,Camupdate.orthographicSize*0.02f,1f);;//unsure of the value best suited here, but this code is ready for graphics pass
 				Indicator.transform.position=hit.point;
 			}
 		}
@@ -420,7 +428,7 @@ public class GameController : MonoBehaviour {
 		hookedalpha=false;
 		camhook=false;
 		time=0f;
-		
+
 		initial=true;
 		initial0=true;
 		initial1=true;

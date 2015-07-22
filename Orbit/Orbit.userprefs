@@ -1,12 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GameController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Rotator.cs">
     <Files>
-      <File FileName="Assets\Rotator.cs" Line="1" Column="1" />
-      <File FileName="Assets\Player.cs" Line="1" Column="1" />
-      <File FileName="Assets\GameController.cs" Line="304" Column="56" />
+      <File FileName="Assets\Rotator.cs" Line="41" Column="5" />
+      <File FileName="Assets\Player.cs" Line="20" Column="29" />
+      <File FileName="Assets\GameController.cs" Line="293" Column="101" />
       <File FileName="Assets\FuelPower.cs" Line="1" Column="1" />
-      <File FileName="Assets\launcher.cs" Line="1" Column="1" />
+      <File FileName="Assets\launcher.cs" Line="36" Column="18" />
+      <File FileName="Assets\FuelBarUI.cs" Line="14" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
