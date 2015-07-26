@@ -6,7 +6,7 @@ CHECKLIST
 GRAPHICAL ELEMENTS
 
 
-**- NOTHING (triangles) TO LAUNCH BUTTON ANIMATION **
+**- NOTHING (triangles) TO LAUNCH BUTTON ANIMATION**
 
 When a level is loaded up, after showing the general space and planet locations the game goes into explore mode, when it enters this mode the user is able to drag and zoom around the level using fingers. When entering this the launch button needs to appear somehow. This can be achieved through the two triangles fading in then spreading out to show the launch button, similar to how the triangles expand from the launch button to the fuel bar
 
