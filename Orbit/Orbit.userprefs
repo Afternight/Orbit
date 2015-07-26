@@ -1,10 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Rotator.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GameController.cs">
     <Files>
-      <File FileName="Assets\Rotator.cs" Line="41" Column="5" />
-      <File FileName="Assets\Player.cs" Line="20" Column="29" />
-      <File FileName="Assets\GameController.cs" Line="293" Column="101" />
+      <File FileName="Assets\Rotator.cs" Line="44" Column="17" />
+      <File FileName="Assets\Player.cs" Line="28" Column="34" />
+      <File FileName="Assets\GameController.cs" Line="298" Column="45" />
       <File FileName="Assets\FuelPower.cs" Line="1" Column="1" />
       <File FileName="Assets\launcher.cs" Line="36" Column="18" />
       <File FileName="Assets\FuelBarUI.cs" Line="14" Column="23" />

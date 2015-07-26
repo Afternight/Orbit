@@ -293,8 +293,9 @@ public class GameController : MonoBehaviour {
 			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-1.5f,(2f*Camupdate.orthographicSize)-1.5f);
 			RaycastHit2D hit=Physics2D.Linecast(Earth.transform.position,MainCamupdate.transform.position,Physics2D.DefaultRaycastLayers,-Mathf.Infinity,-9);
 			if (hit.rigidbody!=null){
+				Vector3 indicatorv3=new Vector3 (hit.point.x,hit.point.y,-2);
 				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.02f,Camupdate.orthographicSize*0.02f,1f);;//unsure of the value best suited here, but this code is ready for graphics pass
-				Indicator.transform.position=hit.point;
+				Indicator.transform.position=indicatorv3;
 			}
 		}
 	}
