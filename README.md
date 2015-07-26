@@ -6,61 +6,25 @@ CHECKLIST
 GRAPHICAL ELEMENTS
 
 
-**- URGENT FUEL BAR** BACKING DONE
-Fuel bar needs (seperate) bar graphic, as in the loading bar bit is seperated from the backdrop etc
-Arrows to go around planets 
+**- NOTHING (triangles) TO LAUNCH BUTTON ANIMATION **
 
-**- LAUNCH BUTTON **  DONE
+When a level is loaded up, after showing the general space and planet locations the game goes into explore mode, when it enters this mode the user is able to drag and zoom around the level using fingers. When entering this the launch button needs to appear somehow. This can be achieved through the two triangles fading in then spreading out to show the launch button, similar to how the triangles expand from the launch button to the fuel bar
 
-which will transform into fuel bar, bar is located in center bottom of screen. Needs to have fuel text or something to make it clear that its the fuel bar
+**- ASTEROID TARGET INDICATOR**
 
-Launch button also needs some kind of power bar on it, unsure as of this time whether this needs to be free-floating to allow manipulation or if it can be graphically part of the launch button. Depending on the amount of this power the rocket will be launched a different amount initially. Might also need somekind of moveable limiter for the bar, as to say that on this level you cannot launch the rocket with any more power. Not to sure about this mechanic yet
+Need an indicator like the one used for earth atm, perhaps make the existing indicator for earth and the asteroid one have a wider whitespace to make it a bit more clear its an indicator and is not the planet. New code to be implemented which makes the indicator get smaller the furth the thing to be indicated is away in distance 
 
 
-**-TARGET INDICATOR**
+**- WIN MENU**
 
-When the final target is off screen something is going to show up on the borders of the camera pointing towards it, perhaps since we are launching to land on the earth planet this is simply the earth planet miniturised with an arrow. 
-
-
-**Menu, the planets as actual buttons ** DONE
-
-**- STARTING ASTEROID ** DONE
-like a really small asteroid  that is where the rocket starts
-
-
-**Finishing object** DONE
-object that finishes the level when you touch it
-
-
-**- DESTRUCTION ANIMATION** DONE
-(sprite sheet from rocket)
-
-
-**- PAUSE / RESTART BUTTONS** DONE
-
-
-**- PAUSE MENU**
-like a menu that materialises when game paused. Basic concept of it split into quaters, top right assigned to stats of level atm, other 3 to the buttons for resume,restart,exit to menu //consider removing reset button from pause menu if to much clutter
+Free roam for this, needs to display the total amount of fuel left, a highscore (the highest amount of fuel left) and something showing the 3 tiers of scores, ie you get bronze for a certain amount, silver for another, gold for higher etc. Also a restart button and a back to menu
 
 
 **Level selection screen**
 
-
-Code-
-
-
-decide on launching mechanism
+Free roam, however need button to go back to menu and a "challenge" (the daily level thing) level button that skips to the challenge level of the day. A total of 30 in built levels are present. Also need to be able to put a border or something around levels to indicate the score level previously achieved, ie I got gold in level 1 so it has a gold medal on it or a gold border or something
 
 
-Fuel bar logic
+**- PAUSE BAR**
 
-
-Extra power ups - forcefield etc
-
-
-Different types of planets, add tag section and code for it
-
-
-Destruction logic, decide how its going to incident itself
-
-
+During pause its going to allow players to go back into the explore mode and zoom and stuff around the level to see where they are at etc, need somethign to show up thats unintrusive that shows its paused, maybey give a back to menu button as well and seconds of fuel left
