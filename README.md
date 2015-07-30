@@ -5,11 +5,6 @@ Repo for the Orbit mobile application project
 CHECKLIST
 GRAPHICAL ELEMENTS
 
-
-**- NOTHING (triangles) TO LAUNCH BUTTON ANIMATION NEEDS ALPA FADE IN!!!**
-
-When a level is loaded up, after showing the general space and planet locations the game goes into explore mode, when it enters this mode the user is able to drag and zoom around the level using fingers. When entering this the launch button needs to appear somehow. This can be achieved through the two triangles fading in then spreading out to show the launch button, similar to how the triangles expand from the launch button to the fuel bar
-
 **- ASTEROID TARGET INDICATOR**
 
 Need an indicator like the one used for earth atm, perhaps make the existing indicator for earth and the asteroid one have a wider whitespace to make it a bit more clear its an indicator and is not the planet. New code to be implemented which makes the indicator get smaller the furth the thing to be indicated is away in distance 
