@@ -52,6 +52,7 @@ public class GameController : MonoBehaviour {
 	public GameObject trajectory;
 	public GameObject Earth;
 	public GameObject Indicator;
+	public GameObject FuelBar;
 	private launcher launchscript;
 	public GameObject MainCamupdate;
 	public Camera Camupdate;
@@ -298,6 +299,10 @@ public class GameController : MonoBehaviour {
 				Indicator.transform.position=indicatorv3;
 			}
 		}
+
+		//Fuel bar percentage code
+		FuelBar = GameObject.Find ("FuelBar");
+
 	}
 	public void SceneSwitchers (int target) { //consider using this for level load stat
 		if (target>=1){
