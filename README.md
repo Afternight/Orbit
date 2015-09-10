@@ -2,6 +2,36 @@
 Repo for the Orbit mobile application project
 
 
+# Alpha release requirements
+In order to release the alpha test to IOS devices via testflight the following must be completed
+
+
+**Finalise camera interaction mechanics**
+
+
+**Finish fuel bar logic and graphical representation**
+
+
+**Implement basic pause gui**
+
+
+**Level select screen**
+
+
+**30 levels**
+
+
+**Afternight Branding**
+
+
+**Orbit rename branding**
+
+
+**Finishing level screen**
+
+
+**Constant memory logic to store scores**
+
 CHECKLIST
 GRAPHICAL ELEMENTS
 
