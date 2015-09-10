@@ -35,8 +35,7 @@ In order to release the alpha test to IOS devices via testflight the following m
 
 **Finishing screen**
 
-CHECKLIST
-GRAPHICAL ELEMENTS
+#CHECKLIST GRAPHICAL ELEMENTS
 
 **- ASTEROID TARGET INDICATOR**
 
