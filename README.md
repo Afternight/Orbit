@@ -32,6 +32,9 @@ In order to release the alpha test to IOS devices via testflight the following m
 
 **Constant memory logic to store scores**
 
+
+**Finishing screen**
+
 CHECKLIST
 GRAPHICAL ELEMENTS
 
