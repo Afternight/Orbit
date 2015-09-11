@@ -82,6 +82,12 @@ public class GameController : MonoBehaviour {
 	public bool initial=true;
 	public bool initial0=true;
 	public bool initial1=true;
+    public bool initialfuelset = true;
+
+    //fuel bar
+    public RectTransform fuelbartransform;
+    //public Vector2 cache=new Vector2(0f,0f);
+
 
 	void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
@@ -90,12 +96,12 @@ public class GameController : MonoBehaviour {
 		} else if (control!=this){
 			Destroy(gameObject);
 		}
-		//set fuel array
-		//level indexs of 0-4 reserved for nonplayables
-		//0 is main menu
-		//1 is level select
-		//2 is options
-
+        //set fuel array
+        //level indexs of 0-4 reserved for nonplayables
+        //0 is main menu
+        //1 is level select
+        //2 is options
+        fuel = 5f;
 		//fuelinitials[5]=200f; set values for levels here
 		//also store initial camera locations
 	}
@@ -129,8 +135,8 @@ public class GameController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		//Event system
-		//always present items
+        //Event system
+        //always present items
 		MainCamupdate=GameObject.Find("Main Camera");
 		Camupdate=MainCamupdate.GetComponent<Camera>();
 		if (inLevel){ //if in a playable level
@@ -300,8 +306,15 @@ public class GameController : MonoBehaviour {
 			}
 		}
 
-		//Fuel bar percentage code
-		FuelBar = GameObject.Find ("FuelBar");
+        //Fuel bar percentage code
+        //fuel = fuel - 1 * Time.deltaTime; //test line 
+        FuelBar = GameObject.Find ("fuel");
+        fuelbartransform=FuelBar.GetComponent<RectTransform>();
+        Debug.Log("FUEL " + fuel);
+        if (fuel > 0)
+            fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial
+        else
+            fuelbartransform.localScale = Vector3.zero;
 
 	}
 	public void SceneSwitchers (int target) { //consider using this for level load stat
@@ -312,6 +325,7 @@ public class GameController : MonoBehaviour {
 			inLevel=false;
 		}
 		Application.LoadLevel(target);
+        fuel = 5f;//TEMP
 	}
 	public bool UiDetect(Touch touchdetect){
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
@@ -429,7 +443,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void ResetControl(){
-		fuel=200f; //here make reference to level data script for fuel level to reset to
+		fuel=5f; //here make reference to level data script for fuel level to reset to
 		//fuel=fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
 		hookedalpha=false;
 		camhook=false;
@@ -438,9 +452,15 @@ public class GameController : MonoBehaviour {
 		initial=true;
 		initial0=true;
 		initial1=true;
-		
-		//Reset strike system resets
-		camposready=false;
+
+        initialfuelset = true;
+
+        /*FuelBar = GameObject.Find("fuel");
+        fuelbartransform = FuelBar.GetComponent<RectTransform>();
+        fuelbartransform.position = cache;*/
+
+        //Reset strike system resets
+        camposready =false;
 		zoomready=false;
 		
 		Application.LoadLevel (Application.loadedLevel); //resets level
