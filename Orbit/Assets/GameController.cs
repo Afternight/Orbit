@@ -88,8 +88,14 @@ public class GameController : MonoBehaviour {
     public RectTransform fuelbartransform;
     //public Vector2 cache=new Vector2(0f,0f);
 
+    //Gravitational stuff
+    GameObject[] planets;
+    public float maxGravDist = 100f;
+    public float maxGravity = 0.5f;
+    public Rigidbody2D playerrigid;
 
-	void Awake () {
+
+    void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
 			DontDestroyOnLoad(gameObject);
 			control=this;
@@ -308,25 +314,48 @@ public class GameController : MonoBehaviour {
 
         //Fuel bar percentage code
         //fuel = fuel - 1 * Time.deltaTime; //test line 
-        FuelBar = GameObject.Find ("fuel");
-        fuelbartransform=FuelBar.GetComponent<RectTransform>();
-        Debug.Log("FUEL " + fuel);
-        if (fuel > 0)
-            fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial
-        else
-            fuelbartransform.localScale = Vector3.zero;
+        if (inLevel){
+            FuelBar = GameObject.Find("fuel");
+            fuelbartransform = FuelBar.GetComponent<RectTransform>();
+            Debug.Log("FUEL " + fuel);
+            if (fuel > 0)
+                fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial
+            else
+                fuelbartransform.localScale = Vector3.zero;
+        }
+
 
 	}
-	public void SceneSwitchers (int target) { //consider using this for level load stat
-		if (target>=1){
+
+    void FixedUpdate() {
+        if (inLevel){
+            player = GameObject.Find("Rocket");
+            playerrigid = player.GetComponent<Rigidbody2D>();
+            planets = GameObject.FindGameObjectsWithTag("Planet"); //think 5.2 update broke tags or something, had to code define
+            foreach (GameObject planet in planets){ //iterates through planets
+                float dist = Vector3.Distance(planet.transform.position, player.transform.position);
+                Debug.Log("Dist " + dist);
+                if (dist <= maxGravDist){
+                    maxGravity = 0.3f;//need to modify
+                    maxGravity = maxGravity / dist * 2;// distance gets smaller!!!!
+                    Vector3 v = planet.transform.position - player.transform.position;
+                    playerrigid.AddForce(v.normalized * (1.0f - dist / maxGravDist) * maxGravity, ForceMode2D.Impulse); //change max gravity based on distance from object
+                }
+            }
+        }
+    }
+
+    public void SceneSwitchers (int target) { //consider using this for level load stat
+		if (target>=1){ //modify this value to first level when pre levels finished
 			inLevel=true;
-			GameStatus=0;
+            GameStatus =0;
 		} else {
 			inLevel=false;
 		}
 		Application.LoadLevel(target);
         fuel = 5f;//TEMP
 	}
+
 	public bool UiDetect(Touch touchdetect){
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
@@ -350,6 +379,7 @@ public class GameController : MonoBehaviour {
 		}
 		return false;
 	}
+
 	public bool previousTargetDetect(Touch touchdetect){ //difference to target detect is raycasts from delta position, consider condensing
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.deltaPosition), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
 		if (hit.rigidbody!=null&&hit.transform.parent!=null){
@@ -470,8 +500,9 @@ public class GameController : MonoBehaviour {
 		GameStatus=1; //set to explore
 	}
 
-	public float ObtainScale(){
+	public float ObtainScale(){ //this function is used by launcher to determine what force is applied to the rocket on launch!
 		//return trajectory.transform.localScale.y;
+        //eventually perhaps add in fuel depletion, do not just suddenly change use exp to create smooth animation
 		return 0.5f; //stubbed for testing and balancing
 	}
 }

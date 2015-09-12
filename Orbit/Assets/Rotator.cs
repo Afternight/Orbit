@@ -9,8 +9,9 @@ public class Rotator : MonoBehaviour {
 	Animator An;
 	// Use this for initialization
 	void Start () {
-		//DontDestroyOnLoad(gameObject);
-		//y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
+        //DontDestroyOnLoad(gameObject);
+        //y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
+        this.tag = "Planet"; //NOTE CODE DEFINED 
 	}
 	
 	// Update is called once per frame
