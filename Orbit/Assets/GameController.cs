@@ -82,6 +82,7 @@ public class GameController : MonoBehaviour {
 	public bool initial=true;
 	public bool initial0=true;
 	public bool initial1=true;
+    public bool initiallaunched = true;
     public bool initialfuelset = true;
 
     //fuel bar
@@ -92,7 +93,10 @@ public class GameController : MonoBehaviour {
     GameObject[] planets;
     public float maxGravDist = 100f;
     public float maxGravity = 0.5f;
-    public Rigidbody2D playerrigid;
+
+    //Mid point determinants
+    public float StrongestGravit = 0f;
+    public GameObject StrongestPlanet;
 
 
     void Awake () {
@@ -220,8 +224,9 @@ public class GameController : MonoBehaviour {
 		} else if (GameStatus==2){ // Launching
 			CancelInvoke("CamStart"); // incase time has been skipped
 			CamMode=false; //back to the dynacam
-			CamTarget=PlayerCam.transform.position;
-			if (initial){
+            CamTarget=PlayerCam.transform.position;
+            //CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
+            if (initial){
 				CamZoom=PlayerPrefs.GetFloat("PlayZoom");
 				initial=false;
 			} else {
@@ -231,9 +236,15 @@ public class GameController : MonoBehaviour {
 			CamScale=0.1f;
 		} else if (GameStatus==3){ //Launched
 			CamMode=false;
-			CamTarget=PlayerCam.transform.position; //set dynacam values for launched
-			CamZoom=PlayerPrefs.GetFloat("PlayZoom");
-			CamBound=0.2f;
+            if (initiallaunched) {
+                camhook = false;
+                initiallaunched = false;
+            }
+            //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
+			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
+            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
+            CamZoom = PlayerPrefs.GetFloat("PlayZoom");
+            CamBound =0.2f;
 			if (Input.touchCount>=1){
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
 				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
@@ -291,7 +302,7 @@ public class GameController : MonoBehaviour {
 			if (CamZoom==0f){
 				CamZoom=CamOrigZoom;
 			}
-			//call DynaCam
+			//call the glorious DynaCam
 			DynaCam(CamTarget,CamZoom,CamScale,CamBound,Revoke);
 		}
 
@@ -330,16 +341,20 @@ public class GameController : MonoBehaviour {
     void FixedUpdate() {
         if (inLevel){
             player = GameObject.Find("Rocket");
-            playerrigid = player.GetComponent<Rigidbody2D>();
             planets = GameObject.FindGameObjectsWithTag("Planet"); //think 5.2 update broke tags or something, had to code define
             foreach (GameObject planet in planets){ //iterates through planets
                 float dist = Vector3.Distance(planet.transform.position, player.transform.position);
-                Debug.Log("Dist " + dist);
                 if (dist <= maxGravDist){
                     maxGravity = 0.3f;//need to modify
                     maxGravity = maxGravity / dist * 2;// distance gets smaller!!!!
                     Vector3 v = planet.transform.position - player.transform.position;
-                    playerrigid.AddForce(v.normalized * (1.0f - dist / maxGravDist) * maxGravity, ForceMode2D.Impulse); //change max gravity based on distance from object
+                    Vector2 force = v.normalized * (1.0f - dist / maxGravDist) * maxGravity;
+                    if (force.magnitude >= StrongestGravit){ //add overlap section eventually to prevent binary setups causing a major issue
+                        StrongestGravit = force.magnitude; //need to cause entering of this loop if level was reset
+                        StrongestPlanet = planet;
+                        Debug.Log("New strongest planet, name " + StrongestPlanet.name);
+                    }
+                    player.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse); //change max gravity based on distance from object
                 }
             }
         }
@@ -348,7 +363,8 @@ public class GameController : MonoBehaviour {
     public void SceneSwitchers (int target) { //consider using this for level load stat
 		if (target>=1){ //modify this value to first level when pre levels finished
 			inLevel=true;
-            GameStatus =0;
+            GameStatus=0;
+            //eventually add in loading of level datastruct here 
 		} else {
 			inLevel=false;
 		}
@@ -482,12 +498,12 @@ public class GameController : MonoBehaviour {
 		initial=true;
 		initial0=true;
 		initial1=true;
-
+        initiallaunched = true;
         initialfuelset = true;
 
-        /*FuelBar = GameObject.Find("fuel");
-        fuelbartransform = FuelBar.GetComponent<RectTransform>();
-        fuelbartransform.position = cache;*/
+        //Strongest reset
+        StrongestPlanet = null;
+        StrongestGravit = 0f;
 
         //Reset strike system resets
         camposready =false;
