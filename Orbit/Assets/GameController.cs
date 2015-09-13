@@ -93,6 +93,7 @@ public class GameController : MonoBehaviour {
     GameObject[] planets;
     public float maxGravDist = 100f;
     public float maxGravity = 0.5f;
+    public float dist = 0f;
 
     //Mid point determinants
     public float StrongestGravit = 0f;
@@ -243,7 +244,10 @@ public class GameController : MonoBehaviour {
             //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
 			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
-            CamZoom = PlayerPrefs.GetFloat("PlayZoom");
+            CamZoom = 0.4f * dist;
+            if (CamZoom <= 4f) { //dist less then like 9 at this point
+                CamZoom = 4f-dist/20;
+            }
             CamBound =0.2f;
 			if (Input.touchCount>=1){
 				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
@@ -267,7 +271,7 @@ public class GameController : MonoBehaviour {
 		} else if (GameStatus==4){ //landed
 			//not much to go in here at the moment as landing is buggy
 		} else if (GameStatus==5){ //Success
-			//call down menu or something
+            Application.LoadLevel(0); //placeholder for testing
 		} else if (GameStatus==6){ //Paused
 			//eventually when freecam functionalised add here
 			//make pause menue pop up
@@ -343,7 +347,7 @@ public class GameController : MonoBehaviour {
             player = GameObject.Find("Rocket");
             planets = GameObject.FindGameObjectsWithTag("Planet"); //think 5.2 update broke tags or something, had to code define
             foreach (GameObject planet in planets){ //iterates through planets
-                float dist = Vector3.Distance(planet.transform.position, player.transform.position);
+                dist = Vector3.Distance(planet.transform.position, player.transform.position);
                 if (dist <= maxGravDist){
                     maxGravity = 0.3f;//need to modify
                     maxGravity = maxGravity / dist * 2;// distance gets smaller!!!!
@@ -478,7 +482,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
-		//Debug.LogError("CamStart has beencalled"); magical line that removes bugs when put in the general vicinity for some reason
+		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
 		PlayerCam=GameObject.Find ("CamTarget");
 		camhook=false;
 		CamTarget=PlayerCam.transform.position;
