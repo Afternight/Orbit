@@ -225,10 +225,10 @@ public class GameController : MonoBehaviour {
 		} else if (GameStatus==2){ // Launching
 			CancelInvoke("CamStart"); // incase time has been skipped
 			CamMode=false; //back to the dynacam
-            CamTarget=PlayerCam.transform.position;
-            //CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
+            //CamTarget=PlayerCam.transform.position;
+            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
             if (initial){
-				CamZoom=PlayerPrefs.GetFloat("PlayZoom");
+				CamZoom= 0.4f * dist;
 				initial=false;
 			} else {
 				CamZoom-=0.1f*Time.deltaTime;
@@ -245,8 +245,8 @@ public class GameController : MonoBehaviour {
 			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
             CamZoom = 0.4f * dist;
-            if (CamZoom <= 4f) { //dist less then like 9 at this point
-                CamZoom = 4f-dist/20;
+            if (CamZoom <= 5f) { //dist less then like 9 at this point
+                CamZoom = 5f;
             }
             CamBound =0.2f;
 			if (Input.touchCount>=1){
@@ -485,10 +485,11 @@ public class GameController : MonoBehaviour {
 		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
 		PlayerCam=GameObject.Find ("CamTarget");
 		camhook=false;
-		CamTarget=PlayerCam.transform.position;
+        CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
+        //CamTarget = PlayerCam.transform.position;
 		CamBound=0.02f;
 		CamScale=0.1f;
-		CamZoom=6f;
+		CamZoom=0.4f*dist;
 		Revoke=true;
 	}
 
