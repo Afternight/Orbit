@@ -8,6 +8,9 @@ public class Earth : MonoBehaviour {
 	private Collider2D Base;*/
 	private GameObject controller;
     private GameController control;
+    private GameObject Menu;
+    private RectTransform MenuTransform;
+    private Vector3 target = new Vector3(0, 1,0);
     /*private GameObject player;
 	private Player playerscript;
 	private Rigidbody2D body;
@@ -30,6 +33,7 @@ public class Earth : MonoBehaviour {
 			y=y+0.1f;
 			transform.rotation = Quaternion.Euler (0f, 0f, y);
 		}
+
 	}
 
 	void OnCollisionEnter2D(Collision2D coll){
@@ -68,12 +72,17 @@ public class Earth : MonoBehaviour {
 		}*/
 
         //old code for landing above, deemed a bit to hard for most players, perhaps offer only in certain levels
-        Invoke("Success", 3);
+        Invoke("Success", 2);
     }
 
 	void Success(){
 		controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
 		control.GameStatus = 5; //assign success status
+        Menu = GameObject.Find("Menu");
+        MenuTransform = Menu.GetComponent<RectTransform>();
+        while (MenuTransform.position != target) { //iterate till in position
+            MenuTransform.position = Vector3.Lerp(MenuTransform.position, target, 0.1f);
+        }
 	}
 }

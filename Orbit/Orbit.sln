@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbit.CSharp.Plugins", "Orbit.CSharp.Plugins.csproj", "{0CB1DA73-4AB0-E800-7E60-B93163E6C733}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbit.CSharp", "Orbit.CSharp.csproj", "{370DC11D-EE12-9534-01E7-1C0BA3C19AAB}"

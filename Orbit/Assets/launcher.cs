@@ -13,6 +13,7 @@ public class launcher : MonoBehaviour {
 	private GameObject trajectory;
 	public Sprite trajectorysolid;
 	public Sprite trajectorytrans;
+    public GameObject launchbutton;
 	// Use this for initialization
 	void Start () {
 
@@ -45,6 +46,8 @@ public class launcher : MonoBehaviour {
 	public void Launch(){
 		//put series of invokes at different intervals for countdown
 		Invoke ("LaunchTimed",3);
+        launchbutton = GameObject.Find("Launch");
+        launchbutton.SetActive(false);
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
 		control.FuelUi.SetTrigger(control.animID);
