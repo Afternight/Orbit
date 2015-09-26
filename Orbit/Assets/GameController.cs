@@ -228,7 +228,7 @@ public class GameController : MonoBehaviour {
             //CamTarget=PlayerCam.transform.position;
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
             if (initial){
-				CamZoom= 0.4f * dist;
+				CamZoom= 0.6f * dist;
 				initial=false;
 			} else {
 				CamZoom-=0.1f*Time.deltaTime;
@@ -244,7 +244,7 @@ public class GameController : MonoBehaviour {
             //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
 			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
-            CamZoom = 0.4f * dist;
+            CamZoom = 0.6f * dist;
             if (CamZoom <= 5f) { //dist less then like 9 at this point
                 CamZoom = 5f;
             }
@@ -318,11 +318,11 @@ public class GameController : MonoBehaviour {
 		//Cam collider pointer
 		//can functionalise and increase for multiple indicators
 		if (inLevel&&indicatorneeded){
-			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-1.5f,(2f*Camupdate.orthographicSize)-1.5f);
+			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-1.5f,(2f*Camupdate.orthographicSize)-2.5f); //need to possibly change values here
 			RaycastHit2D hit=Physics2D.Linecast(Earth.transform.position,MainCamupdate.transform.position,Physics2D.DefaultRaycastLayers,-Mathf.Infinity,-9);
 			if (hit.rigidbody!=null){
 				Vector3 indicatorv3=new Vector3 (hit.point.x,hit.point.y,-2);
-				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.02f,Camupdate.orthographicSize*0.02f,1f);;//unsure of the value best suited here, but this code is ready for graphics pass
+				Indicator.transform.localScale=new Vector3(Camupdate.orthographicSize*0.02f,Camupdate.orthographicSize*0.02f,1f);//unsure of the value best suited here, but this code is ready for graphics pass
 				Indicator.transform.position=indicatorv3;
 			}
 		}
@@ -334,7 +334,7 @@ public class GameController : MonoBehaviour {
             fuelbartransform = FuelBar.GetComponent<RectTransform>();
             Debug.Log("FUEL " + fuel);
             if (fuel > 0)
-                fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial
+                fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial TODO
             else
                 fuelbartransform.localScale = Vector3.zero;
         }
@@ -356,6 +356,7 @@ public class GameController : MonoBehaviour {
                     if (force.magnitude >= StrongestGravit){ //add overlap section eventually to prevent binary setups causing a major issue
                         StrongestGravit = force.magnitude; //need to cause entering of this loop if level was reset
                         StrongestPlanet = planet;
+                        camhook = false; //allow for dynamic change
                         Debug.Log("New strongest planet, name " + StrongestPlanet.name);
                     }
                     player.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse); //change max gravity based on distance from object

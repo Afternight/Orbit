@@ -3,20 +3,20 @@ using System.Collections;
 
 public class Earth : MonoBehaviour {
 	private float y=0f;
-	private Vector2 velocity=new Vector2(0,0);
+	/*private Vector2 velocity=new Vector2(0,0);
 	public float speed;
-	private Collider2D Base;
+	private Collider2D Base;*/
 	private GameObject controller;
-	private GameObject player;
+    private GameController control;
+    /*private GameObject player;
 	private Player playerscript;
 	private Rigidbody2D body;
 	private HingeJoint2D joint;
-	private GameController control;
 	private ContactPoint2D[] contacting;
 	private JointAngleLimits2D jointlimit;
 	private GameObject launch;
 	private launcher launchscript;
-	Animator An;
+	Animator An;*/
 	// Use this for initialization
 	void Start () {
 	
@@ -33,7 +33,7 @@ public class Earth : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll){
-		controller=GameObject.Find ("GameController");
+        /*controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
 		//control.launched=false;
 		player=GameObject.Find("Rocket");
@@ -65,8 +65,11 @@ public class Earth : MonoBehaviour {
 			control.camhook=false;
 			control.GameStatus=7;
 			//Reset();
-		}
-	}
+		}*/
+
+        //old code for landing above, deemed a bit to hard for most players, perhaps offer only in certain levels
+        Invoke("Success", 3);
+    }
 
 	void Success(){
 		controller=GameObject.Find ("GameController");
