@@ -10,7 +10,8 @@ public class Earth : MonoBehaviour {
     private GameController control;
     private GameObject Menu;
     private RectTransform MenuTransform;
-    private Vector3 target = new Vector3(0, 1,0);
+    private GameObject WinAnimation;
+    private RectTransform WinAnimationTransform;
     /*private GameObject player;
 	private Player playerscript;
 	private Rigidbody2D body;
@@ -37,6 +38,8 @@ public class Earth : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll){
+        controller = GameObject.Find("GameController");
+        control = controller.GetComponent<GameController>();
         /*controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
 		//control.launched=false;
@@ -72,7 +75,13 @@ public class Earth : MonoBehaviour {
 		}*/
 
         //old code for landing above, deemed a bit to hard for most players, perhaps offer only in certain levels
-        Invoke("Success", 2);
+        if (control.initialsuccessinvoke) {
+            WinAnimation = GameObject.Find("WinAnimation");
+            WinAnimationTransform = WinAnimation.GetComponent<RectTransform>();
+            WinAnimationTransform.localPosition = control.player.transform.position;
+            Invoke("Success", 2);
+            control.initialsuccessinvoke = false;
+        }
     }
 
 	void Success(){
@@ -81,8 +90,9 @@ public class Earth : MonoBehaviour {
 		control.GameStatus = 5; //assign success status
         Menu = GameObject.Find("Menu");
         MenuTransform = Menu.GetComponent<RectTransform>();
-        while (MenuTransform.position != target) { //iterate till in position
-            MenuTransform.position = Vector3.Lerp(MenuTransform.position, target, 0.1f);
-        }
+        control.DynaMoveTarget = Vector3.zero;
+        control.dynaMoveBound = 1f;
+        control.inputTransform = MenuTransform;
+        control.moveInaction = true;
 	}
 }

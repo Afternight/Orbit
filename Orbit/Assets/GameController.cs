@@ -84,6 +84,7 @@ public class GameController : MonoBehaviour {
 	public bool initial1=true;
     public bool initiallaunched = true;
     public bool initialfuelset = true;
+    public bool initialsuccessinvoke = true;
 
     //fuel bar
     public RectTransform fuelbartransform;
@@ -99,6 +100,17 @@ public class GameController : MonoBehaviour {
     public float StrongestGravit = 0f;
     public GameObject StrongestPlanet;
 
+    //UI elements
+
+
+    //DynaMove
+    public bool hookedMove=false;
+    public float dy = 0f;
+    public float dx = 0f;
+    public bool moveInaction = false;
+    public RectTransform inputTransform;
+    public float dynaMoveBound;
+    public Vector3 DynaMoveTarget;
 
     void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
@@ -271,9 +283,9 @@ public class GameController : MonoBehaviour {
 		} else if (GameStatus==4){ //landed
 			//not much to go in here at the moment as landing is buggy
 		} else if (GameStatus==5){ //Success
-            Application.LoadLevel(0); //placeholder for testing
+            //Application.LoadLevel(0); //placeholder for testing
 		} else if (GameStatus==6){ //Paused
-			//eventually when freecam functionalised add here
+            //eventually when freecam functionalised add here
 			//make pause menue pop up
 			//Consider a wipe function implementable that runs at initial of each gamestatus to ensure correct ui elements shown
 		} else if (GameStatus==7){//destroyed/failed
@@ -318,7 +330,7 @@ public class GameController : MonoBehaviour {
 		//Cam collider pointer
 		//can functionalise and increase for multiple indicators
 		if (inLevel&&indicatorneeded){
-			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-1.5f,(2f*Camupdate.orthographicSize)-2.5f); //need to possibly change values here
+			boxcoll.size=new Vector2((4f*Camupdate.orthographicSize)-3f,(2f*Camupdate.orthographicSize)-2f); //need to possibly change values here
 			RaycastHit2D hit=Physics2D.Linecast(Earth.transform.position,MainCamupdate.transform.position,Physics2D.DefaultRaycastLayers,-Mathf.Infinity,-9);
 			if (hit.rigidbody!=null){
 				Vector3 indicatorv3=new Vector3 (hit.point.x,hit.point.y,-2);
@@ -337,6 +349,11 @@ public class GameController : MonoBehaviour {
                 fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial TODO
             else
                 fuelbartransform.localScale = Vector3.zero;
+        }
+
+        //DynaMove activation
+        if (moveInaction) {
+            dynaMove(inputTransform, DynaMoveTarget, dynaMoveBound);
         }
 
 
@@ -482,6 +499,18 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+    public void dynaMove (RectTransform Transforming, Vector3 target, float bound) {
+        if (Transforming.localPosition != target) {
+            Transforming.localPosition = Vector3.Lerp(Transforming.localPosition, target, 0.1f);
+        } 
+        dx = Transforming.localPosition.x - target.x;
+        dy = Transforming.localPosition.y - target.y;
+        if (((Mathf.Abs(dx) < bound) && (Mathf.Abs(dy) < bound)) || hookedMove == true) {
+            Transforming.localPosition = target;
+            moveInaction = false;
+        }
+    }
+
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
 		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
 		PlayerCam=GameObject.Find ("CamTarget");
@@ -506,6 +535,7 @@ public class GameController : MonoBehaviour {
 		initial1=true;
         initiallaunched = true;
         initialfuelset = true;
+        initialsuccessinvoke = true;
 
         //Strongest reset
         StrongestPlanet = null;
