@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour {
 	//Arrays
 	private float[] fuelinitials;
 
-	//Gameobjects
+	/*GAMEOBJECTS*/
 
     //Player
 	public GameObject PlayerCam;
@@ -110,7 +110,7 @@ public class GameController : MonoBehaviour {
 
     //Background Elements
     public GameObject stars;
-    public Vector3 MapSpeed = new Vector3(0.1f, 0f, 0f);
+    private Vector3 MapSpeed = new Vector3(0.1f, 0.1f, 0f);
 
 
     //DynaMove
@@ -172,11 +172,11 @@ public class GameController : MonoBehaviour {
         //always present items
 		MainCamupdate=GameObject.Find("Main Camera");
 		Camupdate=MainCamupdate.GetComponent<Camera>();
-		if (inLevel){ //if in a playable level
+        stars = GameObject.Find("ultramap");
+        if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			PlayerCam=GameObject.Find ("CamTarget");
-            stars = GameObject.Find("ultramap");
 			Earth=GameObject.Find("Earth");
 			Indicator=GameObject.Find ("Indicator");
 			launcher=GameObject.Find("Launcher");
@@ -184,7 +184,7 @@ public class GameController : MonoBehaviour {
 			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
 			boxcoll=MainCamupdate.GetComponent<BoxCollider2D>();
-		} else if (Application.loadedLevel==0){ //menu exception
+        } else if (Application.loadedLevel==0){ //menu exception
 			GameStatus=1;
 		}
 		if (GameStatus==0){ //Starting
@@ -370,7 +370,7 @@ public class GameController : MonoBehaviour {
         //Star map code
         //perhaps put in here a load value which loads the movement amount from a level store
         //that way can make stars move towards goal every time to make it more clear subconciously
-        stars.transform.position+=Time.deltaTime*MapSpeed;
+        stars.transform.position += Time.deltaTime * MapSpeed;
     }
 
     void FixedUpdate() {
