@@ -83,6 +83,7 @@
     <Compile Include="Assets\GameController.cs" />
     <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\Rotator.cs" />
+    <Compile Include="Assets\StarMapDirect.cs" />
     <Compile Include="Assets\launcher.cs" />
   </ItemGroup>
   <ItemGroup>

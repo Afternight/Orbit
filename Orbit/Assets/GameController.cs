@@ -108,11 +108,6 @@ public class GameController : MonoBehaviour {
     public GameObject Indicator;
     public GameObject FuelBar;
 
-    //Background Elements
-    public GameObject stars;
-    private Vector3 MapSpeed = new Vector3(0.1f, 0.1f, 0f);
-
-
     //DynaMove
     public bool hookedMove=false;
     public float dy = 0f;
@@ -172,7 +167,6 @@ public class GameController : MonoBehaviour {
         //always present items
 		MainCamupdate=GameObject.Find("Main Camera");
 		Camupdate=MainCamupdate.GetComponent<Camera>();
-        stars = GameObject.Find("ultramap");
         if (inLevel){ //if in a playable level
 			//player/component declarations
 			player=GameObject.Find("Rocket");
@@ -366,11 +360,6 @@ public class GameController : MonoBehaviour {
         if (moveInaction) {
             dynaMove(inputTransform, DynaMoveTarget, dynaMoveBound);
         }
-
-        //Star map code
-        //perhaps put in here a load value which loads the movement amount from a level store
-        //that way can make stars move towards goal every time to make it more clear subconciously
-        stars.transform.position += Time.deltaTime * MapSpeed;
     }
 
     void FixedUpdate() {
