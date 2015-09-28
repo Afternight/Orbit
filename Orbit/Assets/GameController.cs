@@ -46,20 +46,22 @@ public class GameController : MonoBehaviour {
 	private float[] fuelinitials;
 
 	//Gameobjects
+
+    //Player
 	public GameObject PlayerCam;
 	public GameObject player;
+
+    //Launcher
 	public GameObject launcher;
 	public GameObject trajectory;
-	public GameObject Earth;
-	public GameObject Indicator;
-	public GameObject FuelBar;
-	private launcher launchscript;
+    private launcher launchscript;
+
+    //Misc
+    public GameObject Earth;
 	public GameObject MainCamupdate;
 	public Camera Camupdate;
 	Animator An;
 	public BoxCollider2D boxcoll;
-	public GameObject FuelUiObject;
-	public Animator FuelUi;
 	public int animID;
 	public int animIDreset;
 
@@ -101,6 +103,14 @@ public class GameController : MonoBehaviour {
     public GameObject StrongestPlanet;
 
     //UI elements
+    public GameObject FuelUiObject;
+    public Animator FuelUi;
+    public GameObject Indicator;
+    public GameObject FuelBar;
+
+    //Background Elements
+    public GameObject stars;
+    public Vector3 MapSpeed = new Vector3(0.1f, 0f, 0f);
 
 
     //DynaMove
@@ -166,6 +176,7 @@ public class GameController : MonoBehaviour {
 			//player/component declarations
 			player=GameObject.Find("Rocket");
 			PlayerCam=GameObject.Find ("CamTarget");
+            stars = GameObject.Find("ultramap");
 			Earth=GameObject.Find("Earth");
 			Indicator=GameObject.Find ("Indicator");
 			launcher=GameObject.Find("Launcher");
@@ -300,7 +311,7 @@ public class GameController : MonoBehaviour {
 			CamTarget=CamOrig;
 			CamZoom=CamOrigZoom;
 			CamScale=0.1f;
-			CamBound=0.02f;
+			CamBound=0.02f;                                                         
 			FuelUi.SetTrigger(animIDreset); //trigger reset animation
 			FuelUi.ResetTrigger(animID);
 			if (camposready&&zoomready){
@@ -356,8 +367,11 @@ public class GameController : MonoBehaviour {
             dynaMove(inputTransform, DynaMoveTarget, dynaMoveBound);
         }
 
-
-	}
+        //Star map code
+        //perhaps put in here a load value which loads the movement amount from a level store
+        //that way can make stars move towards goal every time to make it more clear subconciously
+        stars.transform.position+=Time.deltaTime*MapSpeed;
+    }
 
     void FixedUpdate() {
         if (inLevel){
