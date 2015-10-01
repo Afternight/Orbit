@@ -117,6 +117,9 @@ public class GameController : MonoBehaviour {
     public float dynaMoveBound;
     public Vector3 DynaMoveTarget;
 
+    //testing
+    private int GamestatusStore = 999;
+
     void Awake () {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
 			DontDestroyOnLoad(gameObject);
@@ -142,22 +145,24 @@ public class GameController : MonoBehaviour {
 		//set menu origs
 		MainCamupdate=GameObject.Find("Main Camera");
 		Camupdate=MainCamupdate.GetComponent<Camera>();
-		CamOrig=MainCamupdate.transform.position;
-		CamOrigZoom=Camupdate.orthographicSize;
+		//CamOrig=MainCamupdate.transform.position;
+		//CamOrigZoom=Camupdate.orthographicSize;
 	}
 
 	void OnLevelWasLoaded(int level) {
 		//store original camera size
 		Debug.Log("loaded "+level);
-		MainCamupdate=GameObject.Find("Main Camera");
-		Camupdate=MainCamupdate.GetComponent<Camera>();
-		CamOrig=MainCamupdate.transform.position;
-		CamOrigZoom=Camupdate.orthographicSize;
-		FuelUiObject=GameObject.Find("FuelUI");
-		FuelUi=FuelUiObject.GetComponent<Animator>();
-		CamTarget=CamOrig;
-		CamZoom=CamOrigZoom;
-		CamBound=0.01f;
+        if (inLevel) {
+            MainCamupdate = GameObject.Find("Main Camera");
+            Camupdate = MainCamupdate.GetComponent<Camera>();
+            CamOrig = MainCamupdate.transform.position;
+            CamOrigZoom = Camupdate.orthographicSize;
+            FuelUiObject = GameObject.Find("FuelUI");
+            FuelUi = FuelUiObject.GetComponent<Animator>();
+            CamTarget = CamOrig;
+            CamZoom = CamOrigZoom;
+            CamBound = 0.01f;
+        }
 		//set gamestate to starting
 	}
 
@@ -178,7 +183,7 @@ public class GameController : MonoBehaviour {
 			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
 			boxcoll=MainCamupdate.GetComponent<BoxCollider2D>();
-        } else if (Application.loadedLevel==0){ //menu exception
+        } else { //menus exception
 			GameStatus=1;
 		}
 		if (GameStatus==0){ //Starting
@@ -245,7 +250,7 @@ public class GameController : MonoBehaviour {
             //CamTarget=PlayerCam.transform.position;
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
             if (initial){
-				CamZoom= 0.6f * dist;
+				CamZoom= 0.5f * dist;
 				initial=false;
 			} else {
 				CamZoom-=0.1f*Time.deltaTime;
@@ -261,7 +266,7 @@ public class GameController : MonoBehaviour {
             //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
 			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
-            CamZoom = 0.6f * dist;
+            CamZoom = 0.5f * dist;
             if (CamZoom <= 5f) { //dist less then like 9 at this point
                 CamZoom = 5f;
             }
@@ -330,7 +335,10 @@ public class GameController : MonoBehaviour {
 		if (GameStatus!=6f){
 			time=time+1*Time.deltaTime;
 		}
-		Debug.Log ("GameStatus "+GameStatus);
+        if (GameStatus != GamestatusStore) {
+            Debug.LogWarning("GameStatus now " + GameStatus);
+            GamestatusStore = GameStatus;
+        }
 
 		//Cam collider pointer
 		//can functionalise and increase for multiple indicators
@@ -386,15 +394,16 @@ public class GameController : MonoBehaviour {
     }
 
     public void SceneSwitchers (int target) { //consider using this for level load stat
-		if (target>=1){ //modify this value to first level when pre levels finished
+        if (target>=3){ //modify this value to first level when pre levels finished
 			inLevel=true;
-            GameStatus=0;
+            ResetControl();
+            GameStatus =0;
             //eventually add in loading of level datastruct here 
 		} else {
 			inLevel=false;
 		}
 		Application.LoadLevel(target);
-        fuel = 5f;//TEMP
+        fuel = 5f;//TEMP TODO LOAD FROM LEVEL STRUCT
 	}
 
 	public bool UiDetect(Touch touchdetect){
@@ -515,16 +524,18 @@ public class GameController : MonoBehaviour {
     }
 
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
-		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
+		Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
 		PlayerCam=GameObject.Find ("CamTarget");
 		camhook=false;
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
         //CamTarget = PlayerCam.transform.position;
-		CamBound=0.02f;
-		CamScale=0.1f;
+		CamBound=0.1f;
+		CamScale=0.01f;
 		CamZoom=0.4f*dist;
 		Revoke=true;
-	}
+        CamOrig = CamTarget;
+        CamOrigZoom = CamZoom;
+    }
 
 	public void ResetControl(){
 		fuel=5f; //here make reference to level data script for fuel level to reset to
