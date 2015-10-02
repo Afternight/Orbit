@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour {
 	private Vector3 trajscale= new Vector3 (10,0,10);
 
     //Constants
-    public static int totallevels = 3;
+    public static int totallevels = 4;
     public static int totalmenus = 3;
 
 	//Cam controls
@@ -84,6 +84,7 @@ public class GameController : MonoBehaviour {
 							//5 = Finish/Success
 							//6 = Paused
 							//7 = Destroyed
+                            //8 = InMenu
 	public bool indicatorneeded=true;
 	public bool initial=true;
 	public bool initial0=true;
@@ -123,6 +124,8 @@ public class GameController : MonoBehaviour {
 
     //GameData
     public GameData DataPlay=new GameData();
+    //Data is to be loaded on GameControllers creation
+    //Saved whenever a rocket lands successfully
 
     //testing
     private int GamestatusStore = 999;
@@ -134,28 +137,49 @@ public class GameController : MonoBehaviour {
 		} else if (control!=this){
 			Destroy(gameObject);
 		}
-        
-        if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
+
+        /*if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
             DataPlay = (GameData)bf.Deserialize(file);
             file.Close();
-        } else {
+            Debug.LogWarning("loaded level from previous");
+        } else {*/
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file= File.Create(Application.persistentDataPath + "/GameData.dat");
-            //create data in DataPlay
+            FileStream file = File.Create(Application.persistentDataPath + "/GameData.dat");
+
+            //Initialise
+            DataPlay.PanSpeed = new float[totallevels];
+            DataPlay.InitialFuel = new float[totallevels];
+            /*DataPlay.xbounds = new Vector2[totallevels];
+            DataPlay.ybounds = new Vector2[totallevels];
+            DataPlay.stardirect = new Vector3[totallevels];
+            DataPlay.stratviewpos = new Vector3[totallevels];*/
+            DataPlay.stratviewsize = new float[totallevels];
+            DataPlay.BronzeRequirement = new float[totallevels];
+            DataPlay.SilverRequirement = new float[totallevels];
+            DataPlay.GoldRequirement = new float[totallevels];
+
+            DataPlay.HighestFuel = new float[totallevels];
+            DataPlay.TrophyLevel = new int[totallevels];
+            DataPlay.completed = new int[totallevels];
+
+            //Level 0 (index of 3)
+            DataPlay.GoldRequirement[3] = 3f;
+            DataPlay.SilverRequirement[3] = 2f;
+            DataPlay.BronzeRequirement[3] = 1f;
             DataPlay.PanSpeed[3] = 0.1f;
+            DataPlay.InitialFuel[3] = 5f;
+            //DataPlay.stardirect[3] = real; 
+
+            DataPlay.HighestFuel[3] = 0f;
+            DataPlay.completed[3] = 0;
+            DataPlay.TrophyLevel[3] = 0;
+
             bf.Serialize(file, DataPlay);
             file.Close();
-        }
-        //set fuel array
-        //level indexs of 0-4 reserved for nonplayables
-        //0 is main menu
-        //1 is level select
-        //2 is options
-        fuel = 5f;
-		//fuelinitials[5]=200f; set values for levels here
-		//also store initial camera locations
+            Debug.LogWarning("Created new and saved");
+        //}
 	}
 
 	void Start () {
@@ -207,136 +231,138 @@ public class GameController : MonoBehaviour {
         } else { //menus exception
 			GameStatus=1;
 		}
-		if (GameStatus==0){ //Starting
-			CamMode=false;
-			if (initial0){ //to prevent multiple invokes
-				Invoke ("CamStart",2);//Invoke a function to target onto rocket launch pad after 2 seconds
-				initial0=false;
-			}
-		} else if (GameStatus==1){ //Explore
-			//Allow freecam control, plus trajectory modification
-			CamMode=true; //set cam mode
-			if (Input.touchCount==1){
-				touch=Input.GetTouch(0);
-				if (touch.phase==TouchPhase.Began){
-					if (((TargetDetect(touch)==true)||(previousTargetDetect(touch)==true))&&(UiDetect(touch)==false)){ //check if touch is incident with target object
-						//Launcher orientation manipulation
-						if (touch.phase==TouchPhase.Began){
-							draginprogress=true;
-						}
-						Launcherrotate(launcher,touch);
-					} else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
-						Vector2 touchprev=touch.position-touch.deltaPosition;
-						Vector2 touchmagnitude=touch.position-touchprev;
-						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
-						Camupdate.transform.position+=newpos;
-					}
-				} else if ((touch.phase==TouchPhase.Moved)||(touch.phase==TouchPhase.Stationary)){
-					if (draginprogress){
-						Launcherrotate(launcher,touch);
-					} else {
-						Vector2 touchprev=touch.position-touch.deltaPosition;
-						Vector2 touchmagnitude=touch.position-touchprev;
-						Vector3 newpos= new Vector3(-touchmagnitude.x*0.03f,-touchmagnitude.y*0.03f,0);
-						Camupdate.transform.position+=newpos;
-					}
-				} else if ((touch.phase==TouchPhase.Ended)||(touch.phase==TouchPhase.Canceled)){
-					draginprogress=false;
-					if (inLevel){
-						trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
-					}
-					//also put in momentum code here?
-				}
-			} else if (Input.touchCount==2){ //if two fingers are touching, meaning we want to pinch zoom
-				if (inLevel){
-					trajectory.GetComponent<SpriteRenderer>().sprite=launchscript.trajectorytrans;
-				}
-				Touch touchZero = touch;
-				Touch touchOne = Input.GetTouch(1);
-				Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
-				Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
-				
-				float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; // Find the magnitude of the vector (the distance) between the touches in each frame.
-				float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
-				
-				float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
-				if (Mathf.Abs(deltaMagnitudeDiff*orthoZoomSpeed)>=0.1f){ //ensure change is substantial to prevent flickering
-					Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
-				}
-				Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
-			}
-		} else if (GameStatus==2){ // Launching
-			CancelInvoke("CamStart"); // incase time has been skipped
-			CamMode=false; //back to the dynacam
+        if (GameStatus == 0) { //Starting
+            CamMode = false;
+            if (initial0) { //to prevent multiple invokes
+                Invoke("CamStart", 2);//Invoke a function to target onto rocket launch pad after 2 seconds
+                initial0 = false;
+            }
+        } else if (GameStatus == 1) { //Explore
+                                      //Allow freecam control, plus trajectory modification
+            CamMode = true; //set cam mode
+            if (Input.touchCount == 1) {
+                touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began) {
+                    if (((TargetDetect(touch) == true) || (previousTargetDetect(touch) == true)) && (UiDetect(touch) == false)) { //check if touch is incident with target object
+                                                                                                                                  //Launcher orientation manipulation
+                        if (touch.phase == TouchPhase.Began) {
+                            draginprogress = true;
+                        }
+                        Launcherrotate(launcher, touch);
+                    } else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
+                        Vector2 touchprev = touch.position - touch.deltaPosition;
+                        Vector2 touchmagnitude = touch.position - touchprev;
+                        Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
+                        Camupdate.transform.position += newpos;
+                    }
+                } else if ((touch.phase == TouchPhase.Moved) || (touch.phase == TouchPhase.Stationary)) {
+                    if (draginprogress) {
+                        Launcherrotate(launcher, touch);
+                    } else {
+                        Vector2 touchprev = touch.position - touch.deltaPosition;
+                        Vector2 touchmagnitude = touch.position - touchprev;
+                        Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
+                        Camupdate.transform.position += newpos;
+                    }
+                } else if ((touch.phase == TouchPhase.Ended) || (touch.phase == TouchPhase.Canceled)) {
+                    draginprogress = false;
+                    if (inLevel) {
+                        trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
+                    }
+                    //also put in momentum code here?
+                }
+            } else if (Input.touchCount == 2) { //if two fingers are touching, meaning we want to pinch zoom
+                if (inLevel) {
+                    trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
+                }
+                Touch touchZero = touch;
+                Touch touchOne = Input.GetTouch(1);
+                Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
+                Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+                float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; // Find the magnitude of the vector (the distance) between the touches in each frame.
+                float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+                float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
+                if (Mathf.Abs(deltaMagnitudeDiff * orthoZoomSpeed) >= 0.1f) { //ensure change is substantial to prevent flickering
+                    Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+                }
+                Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+            }
+        } else if (GameStatus == 2) { // Launching
+            CancelInvoke("CamStart"); // incase time has been skipped
+            CamMode = false; //back to the dynacam
             //CamTarget=PlayerCam.transform.position;
             CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
-            if (initial){
-				CamZoom= 0.5f * dist;
-				initial=false;
-			} else {
-				CamZoom-=0.1f*Time.deltaTime;
-			}
-			CamBound=0.02f;
-			CamScale=0.1f;
-		} else if (GameStatus==3){ //Launched
-			CamMode=false;
+            if (initial) {
+                CamZoom = 0.5f * dist;
+                initial = false;
+            } else {
+                CamZoom -= 0.1f * Time.deltaTime;
+            }
+            CamBound = 0.02f;
+            CamScale = 0.1f;
+        } else if (GameStatus == 3) { //Launched
+            CamMode = false;
             if (initiallaunched) {
                 camhook = false;
                 initiallaunched = false;
             }
             //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
-			//CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
-            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2,player.transform.position.z);
+            //CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
+            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
             CamZoom = 0.5f * dist;
             if (CamZoom <= 5f) { //dist less then like 9 at this point
                 CamZoom = 5f;
             }
-            CamBound =0.2f;
-			if (Input.touchCount>=1){
-				touch=Input.GetTouch(0);//gets the touch and assigns it to touch variable
-				if (UiDetect(touch)==false){ //if the touch is not coincident with a UI element
-					if (fuel>0){ //if the rocket has fuel
-						An.SetBool("Active",true);
-						fuel=fuel-1*Time.deltaTime;
-						Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
-						Vector3 diff = Camera.main.ScreenToWorldPoint (touch.position) - player.transform.position;
-						diff.Normalize ();
-						float rot_z = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
-						player.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90);
-						x.AddRelativeForce (power, ForceMode2D.Impulse);
-					} else {
-						An.SetBool("Active",false);
-					}
-				}
-			} else { //if nothing else is touched make sure to reset rocket power
-				An.SetBool("Active",false);
-			}
-		} else if (GameStatus==4){ //landed
-			//not much to go in here at the moment as landing is buggy
-		} else if (GameStatus==5){ //Success
-            //Application.LoadLevel(0); //placeholder for testing
-		} else if (GameStatus==6){ //Paused
-            //eventually when freecam functionalised add here
-			//make pause menue pop up
-			//Consider a wipe function implementable that runs at initial of each gamestatus to ensure correct ui elements shown
-		} else if (GameStatus==7){//destroyed/failed
-			//reset cam back to initials
-			//when cam is ready call reset
-			if (initial1){
-				camposready=false;
-				zoomready=false;
-				initial1=false;
-			}
-			CamMode=false;
-			CamTarget=CamOrig;
-			CamZoom=CamOrigZoom;
-			CamScale=0.1f;
-			CamBound=0.02f;                                                         
-			FuelUi.SetTrigger(animIDreset); //trigger reset animation
-			FuelUi.ResetTrigger(animID);
-			if (camposready&&zoomready){
-				ResetControl();
-			}
+            CamBound = 0.2f;
+            if (Input.touchCount >= 1) {
+                touch = Input.GetTouch(0);//gets the touch and assigns it to touch variable
+                if (UiDetect(touch) == false) { //if the touch is not coincident with a UI element
+                    if (fuel > 0) { //if the rocket has fuel
+                        An.SetBool("Active", true);
+                        fuel = fuel - 1 * Time.deltaTime;
+                        Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
+                        Vector3 diff = Camera.main.ScreenToWorldPoint(touch.position) - player.transform.position;
+                        diff.Normalize();
+                        float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+                        player.transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+                        x.AddRelativeForce(power, ForceMode2D.Impulse);
+                    } else {
+                        An.SetBool("Active", false);
+                    }
+                }
+            } else { //if nothing else is touched make sure to reset rocket power
+                An.SetBool("Active", false);
+            }
+        } else if (GameStatus == 4) { //landed
+                                      //not much to go in here at the moment as landing is buggy
+        } else if (GameStatus == 5) { //Success
+                                      //Application.LoadLevel(0); //placeholder for testing
+        } else if (GameStatus == 6) { //Paused
+                                      //eventually when freecam functionalised add here
+                                      //make pause menue pop up
+                                      //Consider a wipe function implementable that runs at initial of each gamestatus to ensure correct ui elements shown
+        } else if (GameStatus == 7) {//destroyed/failed
+                                     //reset cam back to initials
+                                     //when cam is ready call reset
+            if (initial1) {
+                camposready = false;
+                zoomready = false;
+                initial1 = false;
+            }
+            CamMode = false;
+            CamTarget = CamOrig;
+            CamZoom = CamOrigZoom;
+            CamScale = 0.1f;
+            CamBound = 0.02f;
+            FuelUi.SetTrigger(animIDreset); //trigger reset animation
+            FuelUi.ResetTrigger(animID);
+            if (camposready && zoomready) {
+                ResetControl();
+            }
+        } else if (GameStatus == 8) {
+
 		} else { //out of bounds
 			Debug.LogError("Invalid GameStatus");
 		}
@@ -418,14 +444,14 @@ public class GameController : MonoBehaviour {
         if (target>=3){ //modify this value to first level when pre levels finished
 			inLevel=true;
             ResetControl();
-            GameStatus =0;
-            //eventually add in loading of level datastruct here 
-		} else {
+            GameStatus = 0;
+        } else {
 			inLevel=false;
+            GameStatus = 8; //set gamestatus to menu
 		}
 		Application.LoadLevel(target);
-        fuel = 5f;//TEMP TODO LOAD FROM LEVEL STRUCT
-	}
+        fuel = DataPlay.InitialFuel[target];
+    }
 
 	public bool UiDetect(Touch touchdetect){
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(touchdetect.position), Vector2.zero,Mathf.Infinity,Physics2D.DefaultRaycastLayers,-8f);
@@ -551,7 +577,7 @@ public class GameController : MonoBehaviour {
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
         //CamTarget = PlayerCam.transform.position;
 		CamBound=0.1f;
-		CamScale=0.01f;
+		CamScale=DataPlay.PanSpeed[Application.loadedLevel];
 		CamZoom=0.4f*dist;
 		Revoke=true;
         CamOrig = CamTarget;
@@ -559,11 +585,11 @@ public class GameController : MonoBehaviour {
     }
 
 	public void ResetControl(){
-		fuel=5f; //here make reference to level data script for fuel level to reset to
+		fuel=DataPlay.InitialFuel[3]; //here make reference to level data script for fuel level to reset to
 		//fuel=fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
 		hookedalpha=false;
 		camhook=false;
-		time=0f;
+		time=0f; //why do I have this? Consider adding fastest mode later
 
 		initial=true;
 		initial0=true;
@@ -592,27 +618,44 @@ public class GameController : MonoBehaviour {
         //eventually perhaps add in fuel depletion, do not just suddenly change use exp to create smooth animation
 		return 0.5f; //stubbed for testing and balancing
 	}
+
+    public void Save() {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/GameData.dat");
+        bf.Serialize(file, DataPlay); //saves data in
+        Debug.LogWarning("Data saved");
+        file.Close();
+    }
+
+    //unsure if need this function yet
+    /*public void Load() {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
+        DataPlay = (GameData)bf.Deserialize(file); //load data
+        Debug.LogWarning("Data loaded");
+        file.Close();
+    }*/
 }
 
 [Serializable]
 public class GameData {
 
     //Configs
-    public float[] PanSpeed;
-    public int[] InitialFuel;
-    public Vector2[] xbounds;
-    public Vector2[] ybounds;
-    public Vector3[] stardirect;
-    public Vector3[] stratviewpos;
-    public float[] stratviewsize;
-    public float[] BronzeRequirement;
-    public float[] SilverRequirement;
-    public float[] GoldRequirement;
+    public float[] PanSpeed; //load in whenever needed in CamStart()
+    public float[] InitialFuel; //load in whenever level changed to an inlevel
+    public Vector2[] xbounds; //on calc
+    public Vector2[] ybounds; //^
+    public Vector3[] stardirect; //load in whenever level changed
+    public Vector3[] stratviewpos; //Load in on level change
+    public float[] stratviewsize; //load in on level change
+    public float[] BronzeRequirement; //loaded in on calculation
+    public float[] SilverRequirement; //^
+    public float[] GoldRequirement;   //^
 
 
     //PlayerData
-    public float[] HighestFuel;
-    public int[] TrophyLevel; //1=bronze, 2=silver, 3=gold
+    public float[] HighestFuel; //caclulate on level success()
+    public int[] TrophyLevel; //0=null, 1=bronze, 2=silver, 3=gold success()
     //todo, add unlocked levels
-    //public int[] completed; //0=no, 1=yes
+    public int[] completed; //0=no, 1=yes success()
 }
