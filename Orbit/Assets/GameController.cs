@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameController : MonoBehaviour {
 	public static GameController control;
@@ -18,6 +21,10 @@ public class GameController : MonoBehaviour {
 	private Vector3 maxscale =new Vector3(10,15,10);
 	private Vector3 minscale =new Vector3(10,3,10);
 	private Vector3 trajscale= new Vector3 (10,0,10);
+
+    //Constants
+    public static int totallevels = 3;
+    public static int totalmenus = 3;
 
 	//Cam controls
 	public bool CamMode=false; //where false==dynacam,true=freecam.
@@ -42,9 +49,6 @@ public class GameController : MonoBehaviour {
 	public float CamBound=0.2f;
 	public bool Revoke=false; //if true dynacam will switch modes to freecam after it hooks to the latest target
 	
-	//Arrays
-	private float[] fuelinitials;
-
 	/*GAMEOBJECTS*/
 
     //Player
@@ -117,6 +121,9 @@ public class GameController : MonoBehaviour {
     public float dynaMoveBound;
     public Vector3 DynaMoveTarget;
 
+    //GameData
+    public GameData DataPlay=new GameData();
+
     //testing
     private int GamestatusStore = 999;
 
@@ -127,6 +134,20 @@ public class GameController : MonoBehaviour {
 		} else if (control!=this){
 			Destroy(gameObject);
 		}
+        
+        if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
+            DataPlay = (GameData)bf.Deserialize(file);
+            file.Close();
+        } else {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file= File.Create(Application.persistentDataPath + "/GameData.dat");
+            //create data in DataPlay
+            DataPlay.PanSpeed[3] = 0.1f;
+            bf.Serialize(file, DataPlay);
+            file.Close();
+        }
         //set fuel array
         //level indexs of 0-4 reserved for nonplayables
         //0 is main menu
@@ -571,4 +592,27 @@ public class GameController : MonoBehaviour {
         //eventually perhaps add in fuel depletion, do not just suddenly change use exp to create smooth animation
 		return 0.5f; //stubbed for testing and balancing
 	}
+}
+
+[Serializable]
+public class GameData {
+
+    //Configs
+    public float[] PanSpeed;
+    public int[] InitialFuel;
+    public Vector2[] xbounds;
+    public Vector2[] ybounds;
+    public Vector3[] stardirect;
+    public Vector3[] stratviewpos;
+    public float[] stratviewsize;
+    public float[] BronzeRequirement;
+    public float[] SilverRequirement;
+    public float[] GoldRequirement;
+
+
+    //PlayerData
+    public float[] HighestFuel;
+    public int[] TrophyLevel; //1=bronze, 2=silver, 3=gold
+    //todo, add unlocked levels
+    //public int[] completed; //0=no, 1=yes
 }
