@@ -127,6 +127,9 @@ public class GameController : MonoBehaviour {
     //Data is to be loaded on GameControllers creation
     //Saved whenever a rocket lands successfully
 
+    //other
+    public bool resetalready = false;
+
     //testing
     private int GamestatusStore = 999;
 
@@ -208,17 +211,29 @@ public class GameController : MonoBehaviour {
         if (GameStatus == 0) { //Starting
             CamMode = false;
             if (initial0) { //to prevent multiple invokes
+                CamOrig= new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
+                CamOrigZoom=0.5f * dist;
                 Invoke("CamStart", 2);//Invoke a function to target onto rocket launch pad after 2 seconds
                 initial0 = false;
-            }
+            }          
+
         } else if (GameStatus == 1) { //Explore
-                                      //Allow freecam control, plus trajectory modification
+            if (resetalready) {
+                //for some reason slips through when reset hit really early sometimes so reasigned
+                CamOrig = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
+                CamOrigZoom = 0.5f * dist;
+
+                Camupdate.transform.position = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
+                Camupdate.orthographicSize = 0.5f * dist;
+                resetalready = false;
+            }
+            //Allow freecam control, plus trajectory modification
             CamMode = true; //set cam mode
             if (Input.touchCount == 1) {
                 touch = Input.GetTouch(0);
                 if (touch.phase == TouchPhase.Began) {
                     if (((TargetDetect(touch) == true) || (previousTargetDetect(touch) == true)) && (UiDetect(touch) == false)) { //check if touch is incident with target object
-                                                                                                                                  //Launcher orientation manipulation
+                        //Launcher orientation manipulation
                         if (touch.phase == TouchPhase.Began) {
                             draginprogress = true;
                         }
@@ -417,7 +432,7 @@ public class GameController : MonoBehaviour {
     public void SceneSwitchers (int target) { //consider using this for level load stat
         if (target>=3){ //modify this value to first level when pre levels finished
 			inLevel=true;
-            ResetControl();
+            enteringResetControl();
             GameStatus = 0;
         } else {
 			inLevel=false;
@@ -473,7 +488,6 @@ public class GameController : MonoBehaviour {
 		launcherpos3=launcher.transform.position;
 		distance=Vector2.Distance(launcherpos3,Camera.main.ScreenToWorldPoint(touch.position));
 		//divide distance by current scale, so that
-		Debug.Log ("distance"+distance);
 		//set a max
 		if (Mathf.Abs(distance)>=15f){ //need to find the right value for this
 			trajectory.transform.localScale=maxscale;
@@ -552,16 +566,14 @@ public class GameController : MonoBehaviour {
         //CamTarget = PlayerCam.transform.position;
 		CamBound=0.1f;
 		CamScale=DataPlay.PanSpeed[Application.loadedLevel];
-		CamZoom=0.4f*dist;
+		CamZoom=0.5f*dist;
 		Revoke=true;
         CamOrig = CamTarget;
         CamOrigZoom = CamZoom;
     }
 
 	public void ResetControl(){
-        //need to address issue here of fuel load
-		fuel=DataPlay.InitialFuel[Application.loadedLevel]; //here make reference to level data script for fuel level to reset to
-		//fuel=fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
+        fuel =DataPlay.InitialFuel[Application.loadedLevel];
 		hookedalpha=false;
 		camhook=false;
 		time=0f; //why do I have this? Consider adding fastest mode later
@@ -580,13 +592,41 @@ public class GameController : MonoBehaviour {
         //Reset strike system resets
         camposready =false;
 		zoomready=false;
-		
-		Application.LoadLevel (Application.loadedLevel); //resets level
-		if (GameStatus==6){
+
+        resetalready = true;
+        
+        Application.LoadLevel (Application.loadedLevel); //resets level
+        Debug.LogWarning("reset already is " + resetalready);
+        //set cam values here
+        if (GameStatus==6){
 			Time.timeScale=1;
 		}
 		GameStatus=1; //set to explore
 	}
+
+    public void enteringResetControl() {
+        //used when entering a playable level
+        //could probably be cleaned up by calling this everytime success
+        hookedalpha = false;
+        camhook = false;
+        time = 0f; //why do I have this? Consider adding fastest mode later
+
+        initial = true;
+        initial0 = true;
+        initial1 = true;
+        initiallaunched = true;
+        initialfuelset = true;
+        initialsuccessinvoke = true;
+        resetalready = false;
+
+        //Strongest reset
+        StrongestPlanet = null;
+        StrongestGravit = 0f;
+
+        //Reset strike system resets
+        camposready = false;
+        zoomready = false;
+    }
 
 	public float ObtainScale(){ //this function is used by launcher to determine what force is applied to the rocket on launch!
 		//return trajectory.transform.localScale.y;
