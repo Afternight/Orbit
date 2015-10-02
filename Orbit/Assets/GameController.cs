@@ -134,53 +134,27 @@ public class GameController : MonoBehaviour {
 		if (control==null){ //this script ensures persistance, if one does not exist one is created
 			DontDestroyOnLoad(gameObject);
 			control=this;
-		} else if (control!=this){
+            //make sure to only load or create once
+            if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
+                DataPlay = (GameData)bf.Deserialize(file);
+                file.Close();
+                Debug.LogWarning("loaded level from previous");
+            } else {
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream file = File.Create(Application.persistentDataPath + "/GameData.dat");
+
+                setinitials(); //initialise values
+
+                bf.Serialize(file, DataPlay);
+                file.Close();
+                Debug.LogWarning("Created new and saved");
+            }
+        } else if (control!=this){
 			Destroy(gameObject);
 		}
-
-        /*if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
-            DataPlay = (GameData)bf.Deserialize(file);
-            file.Close();
-            Debug.LogWarning("loaded level from previous");
-        } else {*/
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Application.persistentDataPath + "/GameData.dat");
-
-            //Initialise
-            DataPlay.PanSpeed = new float[totallevels];
-            DataPlay.InitialFuel = new float[totallevels];
-            /*DataPlay.xbounds = new Vector2[totallevels];
-            DataPlay.ybounds = new Vector2[totallevels];
-            DataPlay.stardirect = new Vector3[totallevels];
-            DataPlay.stratviewpos = new Vector3[totallevels];*/
-            DataPlay.stratviewsize = new float[totallevels];
-            DataPlay.BronzeRequirement = new float[totallevels];
-            DataPlay.SilverRequirement = new float[totallevels];
-            DataPlay.GoldRequirement = new float[totallevels];
-
-            DataPlay.HighestFuel = new float[totallevels];
-            DataPlay.TrophyLevel = new int[totallevels];
-            DataPlay.completed = new int[totallevels];
-
-            //Level 0 (index of 3)
-            DataPlay.GoldRequirement[3] = 3f;
-            DataPlay.SilverRequirement[3] = 2f;
-            DataPlay.BronzeRequirement[3] = 1f;
-            DataPlay.PanSpeed[3] = 0.1f;
-            DataPlay.InitialFuel[3] = 5f;
-            //DataPlay.stardirect[3] = real; 
-
-            DataPlay.HighestFuel[3] = 0f;
-            DataPlay.completed[3] = 0;
-            DataPlay.TrophyLevel[3] = 0;
-
-            bf.Serialize(file, DataPlay);
-            file.Close();
-            Debug.LogWarning("Created new and saved");
-        //}
-	}
+    }
 
 	void Start () {
 		//set player preferences if they are not already set
@@ -585,7 +559,8 @@ public class GameController : MonoBehaviour {
     }
 
 	public void ResetControl(){
-		fuel=DataPlay.InitialFuel[3]; //here make reference to level data script for fuel level to reset to
+        //need to address issue here of fuel load
+		fuel=DataPlay.InitialFuel[Application.loadedLevel]; //here make reference to level data script for fuel level to reset to
 		//fuel=fuelinitial[levelindex]; COMMENTED OUT TILL SCENES IMPLEMENTED
 		hookedalpha=false;
 		camhook=false;
@@ -635,6 +610,49 @@ public class GameController : MonoBehaviour {
         Debug.LogWarning("Data loaded");
         file.Close();
     }*/
+
+    public void setinitials() {
+        //Initialise
+        DataPlay.PanSpeed = new float[totallevels];
+        DataPlay.InitialFuel = new float[totallevels];
+        DataPlay.xboundsx = new float[totallevels];
+        DataPlay.xboundsy = new float[totallevels];
+        DataPlay.yboundsx = new float[totallevels];
+        DataPlay.yboundsy = new float[totallevels];
+        DataPlay.stardirectx = new float[totallevels];
+        DataPlay.stardirecty = new float[totallevels];
+        DataPlay.stardirectz = new float[totallevels];
+        DataPlay.stratviewposx = new float[totallevels];
+        DataPlay.stratviewposy = new float[totallevels];
+        DataPlay.stratviewposz = new float[totallevels];
+        DataPlay.stratviewsize = new float[totallevels];
+        DataPlay.BronzeRequirement = new float[totallevels];
+        DataPlay.SilverRequirement = new float[totallevels];
+        DataPlay.GoldRequirement = new float[totallevels];
+
+        DataPlay.HighestFuel = new float[totallevels];
+        DataPlay.TrophyLevel = new int[totallevels];
+        DataPlay.completed = new int[totallevels];
+
+        //Main Menu (index of 0)
+        DataPlay.stardirectx[0] = 0.1f;
+        DataPlay.stardirecty[0] = 0f;
+        DataPlay.stardirectz[0] = 0f;
+
+        //Level 0 (index of 3)
+        DataPlay.GoldRequirement[3] = 3f;
+        DataPlay.SilverRequirement[3] = 2f;
+        DataPlay.BronzeRequirement[3] = 1f;
+        DataPlay.PanSpeed[3] = 0.1f;
+        DataPlay.InitialFuel[3] = 5f;
+        DataPlay.stardirectx[3] = 0.1f;
+        DataPlay.stardirecty[3] = 0f;
+        DataPlay.stardirectz[3] = 0f;
+
+        DataPlay.HighestFuel[3] =0f;
+        DataPlay.completed[3] = 0;
+        DataPlay.TrophyLevel[3] = 0;
+    }
 }
 
 [Serializable]
@@ -643,10 +661,20 @@ public class GameData {
     //Configs
     public float[] PanSpeed; //load in whenever needed in CamStart()
     public float[] InitialFuel; //load in whenever level changed to an inlevel
-    public Vector2[] xbounds; //on calc
-    public Vector2[] ybounds; //^
-    public Vector3[] stardirect; //load in whenever level changed
-    public Vector3[] stratviewpos; //Load in on level change
+
+    public float[] xboundsx; //on calc
+    public float[] xboundsy;
+    public float[] yboundsx;
+    public float[] yboundsy;
+
+    public float[] stardirectx; //load in on calc
+    public float[] stardirecty;
+    public float[] stardirectz;
+
+    public float[] stratviewposx;
+    public float[] stratviewposy;
+    public float[] stratviewposz;
+
     public float[] stratviewsize; //load in on level change
     public float[] BronzeRequirement; //loaded in on calculation
     public float[] SilverRequirement; //^

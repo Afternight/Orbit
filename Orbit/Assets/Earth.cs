@@ -100,10 +100,11 @@ public class Earth : MonoBehaviour {
 
         //DataPlay nessasaries
         control.DataPlay.completed[Application.loadedLevel] = 1;
-        if (control.fuel < control.DataPlay.HighestFuel[Application.loadedLevel]) {
+        if (control.fuel > control.DataPlay.HighestFuel[Application.loadedLevel]) {
             Debug.LogWarning("NEW HIGH SCORE");
             control.DataPlay.HighestFuel[Application.loadedLevel] = control.fuel;
         }
         control.DataPlay.TrophyLevel[Application.loadedLevel] = 3;//temp set at gold forever
+        control.Save();
 	}
 }
