@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Earth : MonoBehaviour {
@@ -105,6 +106,7 @@ public class Earth : MonoBehaviour {
             control.DataPlay.HighestFuel[Application.loadedLevel] = control.fuel;
         }
         control.DataPlay.TrophyLevel[Application.loadedLevel] = 3;//temp set at gold forever
-        control.Save();
+        GameObject.Find("HighScore").GetComponent<Text>().text = "Best score " + control.DataPlay.HighestFuel[Application.loadedLevel];
+        GameObject.Find("FuelLeft").GetComponent<Text>().text = "You had " + control.fuel + " fuel left";
 	}
 }

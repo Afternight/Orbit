@@ -86,7 +86,7 @@ public class GameController : MonoBehaviour {
 							//7 = Destroyed
                             //8 = InMenu
 	public bool indicatorneeded=true;
-	public bool initial=true;
+	//public bool initial=true;
 	public bool initial0=true;
 	public bool initial1=true;
     public bool initiallaunched = true;
@@ -129,6 +129,7 @@ public class GameController : MonoBehaviour {
 
     //other
     public bool resetalready = false;
+    public bool stratcam = false;
 
     //testing
     private int GamestatusStore = 999;
@@ -228,83 +229,88 @@ public class GameController : MonoBehaviour {
                 resetalready = false;
             }
             //Allow freecam control, plus trajectory modification
-            CamMode = true; //set cam mode
-            if (Input.touchCount == 1) {
-                touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Began) {
-                    if (((TargetDetect(touch) == true) || (previousTargetDetect(touch) == true)) && (UiDetect(touch) == false)) { //check if touch is incident with target object
-                        //Launcher orientation manipulation
-                        if (touch.phase == TouchPhase.Began) {
-                            draginprogress = true;
+            if (stratcam == false) {
+                CamMode = true; //set cam mode
+                if (Input.touchCount == 1) {
+                    touch = Input.GetTouch(0);
+                    if (touch.phase == TouchPhase.Began) {
+                        if (((TargetDetect(touch) == true) || (previousTargetDetect(touch) == true)) && (UiDetect(touch) == false)) { //check if touch is incident with target object
+                                                                                                                                      //Launcher orientation manipulation
+                            if (touch.phase == TouchPhase.Began) {
+                                draginprogress = true;
+                            }
+                            Launcherrotate(launcher, touch);
+                        } else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
+                            Vector2 touchprev = touch.position - touch.deltaPosition;
+                            Vector2 touchmagnitude = touch.position - touchprev;
+                            Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
+                            Camupdate.transform.position += newpos;
                         }
-                        Launcherrotate(launcher, touch);
-                    } else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
-                        Vector2 touchprev = touch.position - touch.deltaPosition;
-                        Vector2 touchmagnitude = touch.position - touchprev;
-                        Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
-                        Camupdate.transform.position += newpos;
+                    } else if ((touch.phase == TouchPhase.Moved) || (touch.phase == TouchPhase.Stationary)) {
+                        if (draginprogress) {
+                            Launcherrotate(launcher, touch);
+                        } else {
+                            Vector2 touchprev = touch.position - touch.deltaPosition;
+                            Vector2 touchmagnitude = touch.position - touchprev;
+                            Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
+                            Camupdate.transform.position += newpos;
+                        }
+                    } else if ((touch.phase == TouchPhase.Ended) || (touch.phase == TouchPhase.Canceled)) {
+                        draginprogress = false;
+                        if (inLevel) {
+                            trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
+                        }
+                        //also put in momentum code here?
                     }
-                } else if ((touch.phase == TouchPhase.Moved) || (touch.phase == TouchPhase.Stationary)) {
-                    if (draginprogress) {
-                        Launcherrotate(launcher, touch);
-                    } else {
-                        Vector2 touchprev = touch.position - touch.deltaPosition;
-                        Vector2 touchmagnitude = touch.position - touchprev;
-                        Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
-                        Camupdate.transform.position += newpos;
-                    }
-                } else if ((touch.phase == TouchPhase.Ended) || (touch.phase == TouchPhase.Canceled)) {
-                    draginprogress = false;
+                } else if (Input.touchCount == 2) { //if two fingers are touching, meaning we want to pinch zoom
                     if (inLevel) {
                         trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
                     }
-                    //also put in momentum code here?
-                }
-            } else if (Input.touchCount == 2) { //if two fingers are touching, meaning we want to pinch zoom
-                if (inLevel) {
-                    trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
-                }
-                Touch touchZero = touch;
-                Touch touchOne = Input.GetTouch(1);
-                Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
-                Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+                    Touch touchZero = touch;
+                    Touch touchOne = Input.GetTouch(1);
+                    Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; // Find the position in the previous frame of each touch.
+                    Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
 
-                float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; // Find the magnitude of the vector (the distance) between the touches in each frame.
-                float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+                    float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; // Find the magnitude of the vector (the distance) between the touches in each frame.
+                    float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
 
-                float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
-                if (Mathf.Abs(deltaMagnitudeDiff * orthoZoomSpeed) >= 0.1f) { //ensure change is substantial to prevent flickering
-                    Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+                    float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;// Find the difference in the distances between each frame.
+                    if (Mathf.Abs(deltaMagnitudeDiff * orthoZoomSpeed) >= 0.1f) { //ensure change is substantial to prevent flickering
+                        Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
+                    }
+                    Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
                 }
-                Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+            } else {
+                setStratCam(); //need to consider reset ability
             }
+            
         } else if (GameStatus == 2) { // Launching
             CancelInvoke("CamStart"); // incase time has been skipped
             CamMode = false; //back to the dynacam
-            //CamTarget=PlayerCam.transform.position;
-            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
-            if (initial) {
-                CamZoom = 0.5f * dist;
-                initial = false;
+                             //CamTarget=PlayerCam.transform.position;
+            if (stratcam == false) {
+                //old suspense zoom in code
+                /*if (initial) {
+                    CamZoom = 0.5f * dist;
+                    initial = false;
+                } else {
+                    CamZoom -= 0.1f * Time.deltaTime;
+                }*/
+                setActionCam();
             } else {
-                CamZoom -= 0.1f * Time.deltaTime;
+                setStratCam();
             }
-            CamBound = 0.02f;
-            CamScale = 0.1f;
         } else if (GameStatus == 3) { //Launched
             CamMode = false;
-            if (initiallaunched) {
-                camhook = false;
-                initiallaunched = false;
+            if (stratcam == false) {
+                if (initiallaunched) {
+                    camhook = false;
+                    initiallaunched = false;
+                }
+                setActionCam();
+            } else {
+                setStratCam();
             }
-            //CamTarget=PlayerCam.transform.position; //set dynacam values for launched
-            //CamZoom=PlayerPrefs.GetFloat("PlayZoom"); //its here we want to input midpoint calc and set camtarget to that
-            CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
-            CamZoom = 0.5f * dist;
-            if (CamZoom <= 5f) { //dist less then like 9 at this point
-                CamZoom = 5f;
-            }
-            CamBound = 0.2f;
             if (Input.touchCount >= 1) {
                 touch = Input.GetTouch(0);//gets the touch and assigns it to touch variable
                 if (UiDetect(touch) == false) { //if the touch is not coincident with a UI element
@@ -404,6 +410,9 @@ public class GameController : MonoBehaviour {
         if (moveInaction) {
             dynaMove(inputTransform, DynaMoveTarget, dynaMoveBound);
         }
+
+        //Camera clamping for boundaries
+        Camupdate.transform.position = new Vector3(Mathf.Clamp(Camupdate.transform.position.x, DataPlay.xboundsx[Application.loadedLevel], DataPlay.xboundsy[Application.loadedLevel]), Mathf.Clamp(Camupdate.transform.position.y, DataPlay.yboundsx[Application.loadedLevel], DataPlay.yboundsy[Application.loadedLevel]), -10f);
     }
 
     void FixedUpdate() {
@@ -578,7 +587,7 @@ public class GameController : MonoBehaviour {
 		camhook=false;
 		time=0f; //why do I have this? Consider adding fastest mode later
 
-		initial=true;
+		//initial=true;
 		initial0=true;
 		initial1=true;
         initiallaunched = true;
@@ -611,7 +620,7 @@ public class GameController : MonoBehaviour {
         camhook = false;
         time = 0f; //why do I have this? Consider adding fastest mode later
 
-        initial = true;
+        //initial = true;
         initial0 = true;
         initial1 = true;
         initiallaunched = true;
@@ -651,6 +660,23 @@ public class GameController : MonoBehaviour {
         file.Close();
     }*/
 
+    public void setStratCam() {
+        CamMode = false; //set to dynacam
+        CamTarget = new Vector3(DataPlay.stratviewposx[Application.loadedLevel], DataPlay.stratviewposy[Application.loadedLevel], DataPlay.stratviewposz[Application.loadedLevel]);
+        CamZoom = DataPlay.stratviewsize[Application.loadedLevel];
+        CamBound = 0.2f;
+    }
+
+    public void setActionCam() {
+        CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
+        CamZoom = 0.5f * dist;
+        if (CamZoom <= 5f) { //dist less then like 9 at this point
+            CamZoom = 5f;
+        }
+        CamBound = 0.2f;
+        CamScale = 0.1f;
+    }
+
     public void setinitials() {
         //Initialise
         DataPlay.PanSpeed = new float[totallevels];
@@ -683,11 +709,21 @@ public class GameController : MonoBehaviour {
         DataPlay.GoldRequirement[3] = 3f;
         DataPlay.SilverRequirement[3] = 2f;
         DataPlay.BronzeRequirement[3] = 1f;
-        DataPlay.PanSpeed[3] = 0.1f;
+        DataPlay.PanSpeed[3] = 0.01f;
         DataPlay.InitialFuel[3] = 5f;
         DataPlay.stardirectx[3] = 0.1f;
         DataPlay.stardirecty[3] = 0f;
         DataPlay.stardirectz[3] = 0f;
+
+        DataPlay.xboundsx[3] = -38f;
+        DataPlay.xboundsy[3] = 38f;
+        DataPlay.yboundsx[3] = -19f;
+        DataPlay.yboundsy[3] = 19f;
+
+        DataPlay.stratviewposx[3] = 0f;
+        DataPlay.stratviewposy[3] = 0f;
+        DataPlay.stratviewposz[3] = -10f;
+        DataPlay.stratviewsize[3] = 17f;
 
         DataPlay.HighestFuel[3] =0f;
         DataPlay.completed[3] = 0;

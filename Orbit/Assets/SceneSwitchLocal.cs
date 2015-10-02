@@ -10,4 +10,14 @@ public class SceneSwitchLocal : MonoBehaviour {
         control = controller.GetComponent<GameController>();
         control.SceneSwitchers(target);
     }
+
+    public void CamSwitch() {
+        controller = GameObject.Find("GameController"); //finds gamecontroller
+        control = controller.GetComponent<GameController>();
+        if (control.stratcam) {
+            control.stratcam = false;
+        } else {
+            control.stratcam = true;
+        }
+    }
 }
