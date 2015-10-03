@@ -695,11 +695,11 @@ public class GameController : MonoBehaviour {
         zoomready = false;
     }
 
-	public float ObtainScale(){ //this function is used by launcher to determine what force is applied to the rocket on launch!
+	/*public float ObtainScale(){ //this function is used by launcher to determine what force is applied to the rocket on launch!
 		//return trajectory.transform.localScale.y;
         //eventually perhaps add in fuel depletion, do not just suddenly change use exp to create smooth animation
 		return 0.5f; //stubbed for testing and balancing
-	}
+	}*/
 
     public void Save() {
         BinaryFormatter bf = new BinaryFormatter();
