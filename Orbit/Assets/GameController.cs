@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 using System.IO;
@@ -95,6 +96,9 @@ public class GameController : MonoBehaviour {
 
     //fuel bar
     public RectTransform fuelbartransform;
+    public Image Fuelrect;
+    public GameObject Launch;
+    public Image LaunchImage;
     //public Vector2 cache=new Vector2(0f,0f);
 
     //Gravitational stuff
@@ -131,6 +135,10 @@ public class GameController : MonoBehaviour {
     public bool resetalready = false;
     public bool stratcam = false;
     public GameObject TrajectoryMidpoint;
+    public bool fuelloading = false;
+    public float fadevalue = 0.1f;
+    public bool fadeneeded = false;
+    public bool fadeininitial = true;
 
     //Cams
     public bool ActionCamInitial = true;
@@ -212,6 +220,7 @@ public class GameController : MonoBehaviour {
 			An=player.GetComponent<Animator>();
 			boxcoll=MainCamupdate.GetComponent<BoxCollider2D>();
             TrajectoryMidpoint = GameObject.Find("TrajectoryMidpoint");
+            Launch = GameObject.Find("Launch");
         } else { //menus exception
 			GameStatus=1;
 		}
@@ -365,6 +374,20 @@ public class GameController : MonoBehaviour {
             CamBound = 0.02f;
             FuelUi.SetTrigger(animIDreset); //trigger reset animation
             FuelUi.ResetTrigger(animID);
+            //fade out fuel bar
+            Fuelrect = FuelBar.GetComponent<Image>();
+            Color fade = Fuelrect.color;
+            fade.a = fade.a - 0.1f;
+            Fuelrect.color = fade;
+            //fade in launch button
+            LaunchImage = Launch.GetComponent<Image>();
+            Color fadebeta = LaunchImage.color;
+            fadebeta.a = fadebeta.a + 0.1f;
+            if (fadeininitial) {
+                fadebeta.a = -3f;
+                fadeininitial = false;
+            }
+            LaunchImage.color = fadebeta;
             if (camposready && zoomready) {
                 ResetControl();
             }
@@ -413,14 +436,27 @@ public class GameController : MonoBehaviour {
             fuelbartransform = FuelBar.GetComponent<RectTransform>();
             Debug.Log("FUEL " + fuel);
             if (fuel > 0)
-                fuelbartransform.localScale = new Vector3(fuel / 5f, 1f, 1f);//eventually change 5f to fuelinitial TODO
+                fuelbartransform.localScale = new Vector3(fuel / DataPlay.InitialFuel[Application.loadedLevel], 1f, 1f);
             else
                 fuelbartransform.localScale = Vector3.zero;
+        }
+
+        if (fuelloading) {
+            fuel = Mathf.Lerp(fuel,DataPlay.InitialFuel[Application.loadedLevel], 0.05f);
         }
 
         //DynaMove activation
         if (moveInaction) {
             dynaMove(inputTransform, DynaMoveTarget, dynaMoveBound);
+        }
+
+        //fuel button fade
+        //fade in fuel button
+        if (fadeneeded) {
+            LaunchImage = Launch.GetComponent<Image>();
+            Color fadebeta = LaunchImage.color;
+            fadebeta.a = fadebeta.a + fadevalue;
+            LaunchImage.color = fadebeta;
         }
 
         //Camera clamping for boundaries
@@ -460,7 +496,8 @@ public class GameController : MonoBehaviour {
             GameStatus = 8; //set gamestatus to menu
 		}
 		Application.LoadLevel(target);
-        fuel = DataPlay.InitialFuel[target];
+        //fuel = DataPlay.InitialFuel[target];
+        fuel = 0f;
     }
 
 	public bool UiDetect(Touch touchdetect){
@@ -593,7 +630,10 @@ public class GameController : MonoBehaviour {
     }
 
 	public void ResetControl(){
-        fuel =DataPlay.InitialFuel[Application.loadedLevel];
+        //fuel =DataPlay.InitialFuel[Application.loadedLevel];
+        fadeininitial = true;
+        fadeneeded = false; //reset fade
+        fuel = 0f;
 		hookedalpha=false;
 		camhook=false;
 		time=0f; //why do I have this? Consider adding fastest mode later
@@ -625,6 +665,7 @@ public class GameController : MonoBehaviour {
 	}
 
     public void enteringResetControl() {
+        fadeininitial = true;
         //used when entering a playable level
         //could probably be cleaned up by calling this everytime success
         hookedalpha = false;

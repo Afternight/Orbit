@@ -28,31 +28,42 @@ public class launcher : MonoBehaviour {
 		control=controller.GetComponent<GameController>();
 		player=GameObject.Find("Rocket");
 		trajectory=GameObject.Find ("Trajectory");
+        control.fadeneeded = false;
 		if (control.camposready){
 			cable=gameObject.GetComponent<DistanceJoint2D>();
 			player.transform.SetParent(null);
-			Destroy(trajectory); // need to change to fade away possibly
+			Destroy(trajectory); // need to change to fade away possibly TODO
 			Destroy(cable);
 			force=control.ObtainScale();
 			power.y=force;
 			Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
 			x.AddRelativeForce (power, ForceMode2D.Impulse);
 			control.GameStatus=3;
-			//control.camhook=false;
-			CancelInvoke("LaunchTimed");
+            control.fuelloading = false;
+            control.fuel = control.DataPlay.InitialFuel[Application.loadedLevel];
+            //control.camhook=false;
+            CancelInvoke("LaunchTimed");
 		}
 	}
 
 	public void Launch(){
 		//put series of invokes at different intervals for countdown
 		Invoke ("LaunchTimed",3);
-        launchbutton = GameObject.Find("Launch");
-        launchbutton.SetActive(false);
-		controller=GameObject.Find ("GameController"); //finds gamecontroller
+        controller =GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		control.FuelUi.SetTrigger(control.animID);
+        control.fadevalue = -0.1f;
+        control.fadeneeded = true;
+        control.FuelUi.SetTrigger(control.animID);
 		control.GameStatus=2;
 		control.camhook=false;
-		//should add disabling of certain aspects
+        Invoke("FuelLoading", 1);
+
 	}
+
+    public void FuelLoading() { //purrfffeecctt
+        controller = GameObject.Find("GameController"); //finds gamecontroller
+        control = controller.GetComponent<GameController>();
+        control.fuelloading = true;
+        CancelInvoke("FuelLoading");
+    }
 }
