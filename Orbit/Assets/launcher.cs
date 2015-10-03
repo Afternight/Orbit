@@ -34,7 +34,8 @@ public class launcher : MonoBehaviour {
 			player.transform.SetParent(null);
 			Destroy(trajectory); // need to change to fade away possibly TODO
 			Destroy(cable);
-			force=control.ObtainScale();
+			//force=control.ObtainScale(); //stubbed here
+            force = control.trajectory.transform.localScale.y / 10;
 			power.y=force;
 			Rigidbody2D x = player.gameObject.GetComponent<Rigidbody2D>();
 			x.AddRelativeForce (power, ForceMode2D.Impulse);

@@ -222,7 +222,7 @@ public class GameController : MonoBehaviour {
             TrajectoryMidpoint = GameObject.Find("TrajectoryMidpoint");
             Launch = GameObject.Find("Launch");
         } else { //menus exception
-			GameStatus=1;
+			GameStatus=8;
 		}
         if (GameStatus == 0) { //Starting
             CamMode = false;
@@ -240,13 +240,15 @@ public class GameController : MonoBehaviour {
                 CamOrigZoom = 0.5f * dist;
 
                 Camupdate.transform.position = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
-                Camupdate.orthographicSize = 0.5f * dist;
+                Camupdate.orthographicSize = 0.5f * dist; //functionalise
                 resetalready = false;
             }
             //Allow freecam control, plus trajectory modification
             if (stratcam == false) {
-                CamMode = true; //set cam mode
+                //CamMode = true; //set cam mode
                 if (Input.touchCount == 1) {
+                    CamMode = true; //set cam mode
+                    CancelInvoke("CamStart");
                     touch = Input.GetTouch(0);
                     if (touch.phase == TouchPhase.Began) {
                         if (((TargetDetect(touch) == true) || (previousTargetDetect(touch) == true)) && (UiDetect(touch) == false)) { //check if touch is incident with target object
@@ -282,6 +284,8 @@ public class GameController : MonoBehaviour {
                         //also put in momentum code here?
                     }
                 } else if (Input.touchCount == 2) { //if two fingers are touching, meaning we want to pinch zoom
+                    CamMode = true; //set cam mode
+                    CancelInvoke("CamStart");
                     if (inLevel) {
                         trajectory.GetComponent<SpriteRenderer>().sprite = launchscript.trajectorytrans;
                     }
@@ -391,8 +395,8 @@ public class GameController : MonoBehaviour {
             if (camposready && zoomready) {
                 ResetControl();
             }
-        } else if (GameStatus == 8) {
-
+        } else if (GameStatus == 8) { //menus
+            CamMode = true; //prevent dynacam doing weird stuff
 		} else { //out of bounds
 			Debug.LogError("Invalid GameStatus");
 		}
@@ -617,11 +621,12 @@ public class GameController : MonoBehaviour {
     }
 
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
-		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
+        //Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
+        GameStatus = 1; //allow for interuption
 		camhook=false;
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
         //CamTarget = PlayerCam.transform.position;
-		CamBound=0.1f;
+		CamBound=0.05f;
 		CamScale=DataPlay.PanSpeed[Application.loadedLevel];
 		CamZoom=0.5f*dist;
 		Revoke=true;
@@ -631,6 +636,7 @@ public class GameController : MonoBehaviour {
 
 	public void ResetControl(){
         //fuel =DataPlay.InitialFuel[Application.loadedLevel];
+        CamMode = true;
         fadeininitial = true;
         fadeneeded = false; //reset fade
         fuel = 0f;

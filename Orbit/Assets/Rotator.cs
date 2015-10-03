@@ -33,8 +33,11 @@ public class Rotator : MonoBehaviour {
 		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-		control.ResetControl();
+        if (control.GameStatus == 2 || control.GameStatus == 3 || control.GameStatus == 7) {
+            control.ResetControl();
+        }
 	}
+
 	void OnCollisionEnter2D(Collision2D coll){
 		controller=GameObject.Find ("GameController");
 		control=controller.GetComponent<GameController>();
