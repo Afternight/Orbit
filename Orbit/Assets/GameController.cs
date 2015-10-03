@@ -130,6 +130,11 @@ public class GameController : MonoBehaviour {
     //other
     public bool resetalready = false;
     public bool stratcam = false;
+    public GameObject TrajectoryMidpoint;
+
+    //Cams
+    public bool ActionCamInitial = true;
+    public bool StratCamInitial = true;
 
     //testing
     private int GamestatusStore = 999;
@@ -206,6 +211,7 @@ public class GameController : MonoBehaviour {
 			trajectory=GameObject.Find("Trajectory");
 			An=player.GetComponent<Animator>();
 			boxcoll=MainCamupdate.GetComponent<BoxCollider2D>();
+            TrajectoryMidpoint = GameObject.Find("TrajectoryMidpoint");
         } else { //menus exception
 			GameStatus=1;
 		}
@@ -238,9 +244,11 @@ public class GameController : MonoBehaviour {
                                                                                                                                       //Launcher orientation manipulation
                             if (touch.phase == TouchPhase.Began) {
                                 draginprogress = true;
+                                setActionCam(TrajectoryMidpoint);
                             }
                             Launcherrotate(launcher, touch);
                         } else { // if its not incident then we want to have the camera drag capability possibly functionalise this code
+                            CamMode = true;
                             Vector2 touchprev = touch.position - touch.deltaPosition;
                             Vector2 touchmagnitude = touch.position - touchprev;
                             Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
@@ -248,8 +256,10 @@ public class GameController : MonoBehaviour {
                         }
                     } else if ((touch.phase == TouchPhase.Moved) || (touch.phase == TouchPhase.Stationary)) {
                         if (draginprogress) {
+                            setActionCam(TrajectoryMidpoint);
                             Launcherrotate(launcher, touch);
                         } else {
+                            CamMode = true;
                             Vector2 touchprev = touch.position - touch.deltaPosition;
                             Vector2 touchmagnitude = touch.position - touchprev;
                             Vector3 newpos = new Vector3(-touchmagnitude.x * 0.03f, -touchmagnitude.y * 0.03f, 0);
@@ -278,7 +288,8 @@ public class GameController : MonoBehaviour {
                     if (Mathf.Abs(deltaMagnitudeDiff * orthoZoomSpeed) >= 0.1f) { //ensure change is substantial to prevent flickering
                         Camupdate.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;// change the orthographic size based on the change in distance between the touches.
                     }
-                    Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+                    //Camupdate.orthographicSize = Mathf.Max(Camupdate.orthographicSize, 0.1f);// Make sure the orthographic size never drops below zero.
+                    Camupdate.orthographicSize = Mathf.Clamp(Camupdate.orthographicSize, 2f, DataPlay.maxzoomoutsize[Application.loadedLevel]); //clamp to ensure zooms
                 }
             } else {
                 setStratCam(); //need to consider reset ability
@@ -296,7 +307,8 @@ public class GameController : MonoBehaviour {
                 } else {
                     CamZoom -= 0.1f * Time.deltaTime;
                 }*/
-                setActionCam();
+                //need to get midpoint
+                setActionCam(player);
             } else {
                 setStratCam();
             }
@@ -307,7 +319,7 @@ public class GameController : MonoBehaviour {
                     camhook = false;
                     initiallaunched = false;
                 }
-                setActionCam();
+                setActionCam(player);
             } else {
                 setStratCam();
             }
@@ -568,8 +580,7 @@ public class GameController : MonoBehaviour {
     }
 
 	private void CamStart(){ //uses dynacam to target onto rocket but zoomed out a bit
-		Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
-		PlayerCam=GameObject.Find ("CamTarget");
+		//Debug.LogWarning("CamStart has beencalled"); //magical line that removes bugs when put in the general vicinity for some reason
 		camhook=false;
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
         //CamTarget = PlayerCam.transform.position;
@@ -667,8 +678,9 @@ public class GameController : MonoBehaviour {
         CamBound = 0.2f;
     }
 
-    public void setActionCam() {
-        CamTarget = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, player.transform.position.z);
+    public void setActionCam(GameObject target) {
+        CamMode = false; //set to dynacam
+        CamTarget = new Vector3((StrongestPlanet.transform.position.x + target.transform.position.x) / 2, (StrongestPlanet.transform.position.y + target.transform.position.y) / 2, target.transform.position.z);
         CamZoom = 0.5f * dist;
         if (CamZoom <= 5f) { //dist less then like 9 at this point
             CamZoom = 5f;
@@ -695,6 +707,7 @@ public class GameController : MonoBehaviour {
         DataPlay.BronzeRequirement = new float[totallevels];
         DataPlay.SilverRequirement = new float[totallevels];
         DataPlay.GoldRequirement = new float[totallevels];
+        DataPlay.maxzoomoutsize = new float[totallevels];
 
         DataPlay.HighestFuel = new float[totallevels];
         DataPlay.TrophyLevel = new int[totallevels];
@@ -724,6 +737,8 @@ public class GameController : MonoBehaviour {
         DataPlay.stratviewposy[3] = 0f;
         DataPlay.stratviewposz[3] = -10f;
         DataPlay.stratviewsize[3] = 17f;
+
+        DataPlay.maxzoomoutsize[3] = 25f;
 
         DataPlay.HighestFuel[3] =0f;
         DataPlay.completed[3] = 0;
@@ -755,6 +770,8 @@ public class GameData {
     public float[] BronzeRequirement; //loaded in on calculation
     public float[] SilverRequirement; //^
     public float[] GoldRequirement;   //^
+
+    public float[] maxzoomoutsize;
 
 
     //PlayerData
