@@ -52,6 +52,9 @@ public class launcher : MonoBehaviour {
 		Invoke ("LaunchTimed",3);
         controller =GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
+        if (control.GameStatus == 6) {
+            Time.timeScale = 1; //if the game was paused and they hit launch
+        }
         control.fadevalue = -0.1f;
         control.fadeneeded = true;
         control.FuelUi.SetTrigger(control.animID);

@@ -33,7 +33,7 @@ public class Rotator : MonoBehaviour {
 		//Gamecontroller resets
 		controller=GameObject.Find ("GameController"); //finds gamecontroller
 		control=controller.GetComponent<GameController>();
-        if (control.GameStatus == 2 || control.GameStatus == 3 || control.GameStatus == 7) {
+        if (control.GameStatus == 2 || control.GameStatus == 3 ||control.GameStatus==5 || control.GameStatus == 7) {
             control.ResetControl();
         }
 	}
