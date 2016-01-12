@@ -102,10 +102,13 @@ public class GameController : MonoBehaviour {
     //public Vector2 cache=new Vector2(0f,0f);
 
     //Gravitational stuff
-    GameObject[] planets;
+    GameObject[] planetsalpha;
+    GameObject[] planetsbeta;
+    GameObject[] planetsgamma;
     public float maxGravDist = 100f;
     public float maxGravity = 0.5f;
     public float dist = 0f;
+    public float StrongestPlanetDist = 0f;
 
     //Mid point determinants
     public float StrongestGravit = 0f;
@@ -152,13 +155,13 @@ public class GameController : MonoBehaviour {
 			DontDestroyOnLoad(gameObject);
 			control=this;
             //make sure to only load or create once
-            if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
+            /*if (File.Exists(Application.persistentDataPath + "/GameData.dat")) {
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream file = File.Open(Application.persistentDataPath + "/GameData.dat", FileMode.Open);
                 DataPlay = (GameData)bf.Deserialize(file);
                 file.Close();
                 Debug.LogWarning("loaded level from previous");
-            } else {
+            } else {*/
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream file = File.Create(Application.persistentDataPath + "/GameData.dat");
 
@@ -167,7 +170,7 @@ public class GameController : MonoBehaviour {
                 bf.Serialize(file, DataPlay);
                 file.Close();
                 Debug.LogWarning("Created new and saved");
-            }
+            //}
         } else if (control!=this){
 			Destroy(gameObject);
 		}
@@ -228,7 +231,7 @@ public class GameController : MonoBehaviour {
             CamMode = false;
             if (initial0) { //to prevent multiple invokes
                 CamOrig= new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
-                CamOrigZoom=0.5f * dist;
+                CamOrigZoom=0.5f * StrongestPlanetDist;
                 Invoke("CamStart", 2);//Invoke a function to target onto rocket launch pad after 2 seconds
                 initial0 = false;
             }          
@@ -237,10 +240,10 @@ public class GameController : MonoBehaviour {
             if (resetalready) {
                 //for some reason slips through when reset hit really early sometimes so reasigned
                 CamOrig = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
-                CamOrigZoom = 0.5f * dist;
+                CamOrigZoom = 0.5f * StrongestPlanetDist;
 
                 Camupdate.transform.position = new Vector3((StrongestPlanet.transform.position.x + player.transform.position.x) / 2, (StrongestPlanet.transform.position.y + player.transform.position.y) / 2, -10f);
-                Camupdate.orthographicSize = 0.5f * dist; //functionalise
+                Camupdate.orthographicSize = CamOrigZoom; //functionalise
                 resetalready = false;
             }
             //Allow freecam control, plus trajectory modification
@@ -465,29 +468,58 @@ public class GameController : MonoBehaviour {
 
         //Camera clamping for boundaries
         Camupdate.transform.position = new Vector3(Mathf.Clamp(Camupdate.transform.position.x, DataPlay.xboundsx[Application.loadedLevel], DataPlay.xboundsy[Application.loadedLevel]), Mathf.Clamp(Camupdate.transform.position.y, DataPlay.yboundsx[Application.loadedLevel], DataPlay.yboundsy[Application.loadedLevel]), -10f);
+        
     }
 
     void FixedUpdate() {
+        //gravity code is in here
         if (inLevel){
             player = GameObject.Find("Rocket");
-            planets = GameObject.FindGameObjectsWithTag("Planet"); //think 5.2 update broke tags or something, had to code define
-            foreach (GameObject planet in planets){ //iterates through planets
-                dist = Vector3.Distance(planet.transform.position, player.transform.position);
-                if (dist <= maxGravDist){
-                    maxGravity = 0.3f;//need to modify
-                    maxGravity = maxGravity / dist * 2;// distance gets smaller!!!!
-                    Vector3 v = planet.transform.position - player.transform.position;
-                    Vector2 force = v.normalized * (1.0f - dist / maxGravDist) * maxGravity;
-                    if (force.magnitude >= StrongestGravit){ //add overlap section eventually to prevent binary setups causing a major issue
-                        StrongestGravit = force.magnitude; //need to cause entering of this loop if level was reset
-                        StrongestPlanet = planet;
-                        camhook = false; //allow for dynamic change
-                        Debug.Log("New strongest planet, name " + StrongestPlanet.name);
+            //alpha = largest           
+            if (DataPlay.alphapresent[Application.loadedLevel]) {
+                planetsalpha = GameObject.FindGameObjectsWithTag("PlanetAlpha");
+                foreach (GameObject planet in planetsalpha) { //iterates through planets
+                    dist = Vector3.Distance(planet.transform.position, player.transform.position);
+                    if (dist <= maxGravDist) {
+                        applyforce(0.3f, planet);
                     }
-                    player.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse); //change max gravity based on distance from object
+                }
+            }
+            //beta = medium
+            if (DataPlay.betapresent[Application.loadedLevel]) {
+                planetsbeta = GameObject.FindGameObjectsWithTag("PlanetBeta");
+                foreach (GameObject planet in planetsbeta) { //iterates through planets
+                    dist = Vector3.Distance(planet.transform.position, player.transform.position);
+                    if (dist <= maxGravDist) {
+                        applyforce(0.2f, planet);
+                    }
+                }
+            }
+            //gamma = smallest
+            if (DataPlay.gammapresent[Application.loadedLevel]) {
+                planetsgamma = GameObject.FindGameObjectsWithTag("PlanetGamma");
+                foreach (GameObject planet in planetsgamma) { //iterates through planets
+                    dist = Vector3.Distance(planet.transform.position, player.transform.position);
+                    if (dist <= maxGravDist) {
+                        applyforce(0.1f, planet);
+                    }
                 }
             }
         }
+    }
+
+    private void applyforce(float maxGravity,GameObject planet) {
+        maxGravity = maxGravity / dist * 2;// distance gets smaller!!!!
+        Vector3 v = planet.transform.position - player.transform.position;
+        Vector2 force = v.normalized * (1.0f - dist / maxGravDist) * maxGravity;
+        if (force.magnitude > StrongestGravit) { //add overlap section eventually to prevent binary setups causing a major issue
+            StrongestGravit = force.magnitude; //need to cause entering of this loop if level was reset
+            StrongestPlanet = planet;
+            StrongestPlanetDist = Vector3.Distance(StrongestPlanet.transform.position, player.transform.position);
+            camhook = false; //allow for dynamic change
+            Debug.Log("New strongest planet, name " + StrongestPlanet.name);
+        }
+        player.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse); //change max gravity based on distance from object
     }
 
     public void SceneSwitchers (int target) { //consider using this for level load stat
@@ -628,7 +660,7 @@ public class GameController : MonoBehaviour {
         //CamTarget = PlayerCam.transform.position;
 		CamBound=0.05f;
 		CamScale=DataPlay.PanSpeed[Application.loadedLevel];
-		CamZoom=0.5f*dist;
+		CamZoom=0.5f*StrongestPlanetDist;
 		Revoke=true;
         CamOrig = CamTarget;
         CamOrigZoom = CamZoom;
@@ -728,7 +760,7 @@ public class GameController : MonoBehaviour {
     public void setActionCam(GameObject target) {
         CamMode = false; //set to dynacam
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + target.transform.position.x) / 2, (StrongestPlanet.transform.position.y + target.transform.position.y) / 2, target.transform.position.z);
-        CamZoom = 0.5f * dist;
+        CamZoom = 0.5f * StrongestPlanetDist; //should be dist to strongest plannet?
         if (CamZoom <= 5f) { //dist less then like 9 at this point
             CamZoom = 5f;
         }
@@ -760,6 +792,10 @@ public class GameController : MonoBehaviour {
         DataPlay.TrophyLevel = new int[totallevels];
         DataPlay.completed = new int[totallevels];
 
+        DataPlay.alphapresent = new bool[totallevels];
+        DataPlay.betapresent = new bool[totallevels];
+        DataPlay.gammapresent = new bool[totallevels];
+
         //Main Menu (index of 0)
         DataPlay.stardirectx[0] = 0.1f;
         DataPlay.stardirecty[0] = 0f;
@@ -790,6 +826,11 @@ public class GameController : MonoBehaviour {
         DataPlay.HighestFuel[3] =0f;
         DataPlay.completed[3] = 0;
         DataPlay.TrophyLevel[3] = 0;
+
+        DataPlay.alphapresent[3] = true;
+        DataPlay.betapresent[3] = true;
+        DataPlay.gammapresent[3] = false;
+        
     }
 }
 
@@ -819,6 +860,10 @@ public class GameData {
     public float[] GoldRequirement;   //^
 
     public float[] maxzoomoutsize;
+
+    public bool[] alphapresent;
+    public bool[] betapresent;
+    public bool[] gammapresent;
 
 
     //PlayerData

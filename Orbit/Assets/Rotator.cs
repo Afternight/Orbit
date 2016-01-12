@@ -11,7 +11,7 @@ public class Rotator : MonoBehaviour {
 	void Start () {
         //DontDestroyOnLoad(gameObject);
         //y=PlayerPrefs.GetFloat("Rotate"); //loads rotation value
-        this.tag = "Planet"; //NOTE CODE DEFINED 
+        //this.tag = "PlanetAlpha"; //NOTE CODE DEFINED 
 	}
 	
 	// Update is called once per frame

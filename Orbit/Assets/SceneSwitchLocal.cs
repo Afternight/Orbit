@@ -16,8 +16,10 @@ public class SceneSwitchLocal : MonoBehaviour {
         control = controller.GetComponent<GameController>();
         if (control.stratcam) {
             control.stratcam = false;
+            Debug.LogWarning("Dynacam Enabled");
         } else {
             control.stratcam = true;
+            Debug.LogWarning("Stratcam Enabled");
         }
     }
 }
