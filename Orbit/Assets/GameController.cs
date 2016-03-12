@@ -131,6 +131,7 @@ public class GameController : MonoBehaviour {
 
     //GameData
     public GameData DataPlay=new GameData();
+    public PlayerData PlayersData = new PlayerData();
     //Data is to be loaded on GameControllers creation
     //Saved whenever a rocket lands successfully
 
@@ -169,8 +170,24 @@ public class GameController : MonoBehaviour {
 
                 bf.Serialize(file, DataPlay);
                 file.Close();
-                Debug.LogWarning("Created new and saved");
+                Debug.LogWarning("Created new DataPlay and saved");
             //}
+
+            /*if (File.Exists(Application.persistentDataPath + "/PlayerData.dat")) {
+                BinaryFormatter pf = new BinaryFormatter();
+                FileStream pfile = File.Open(Application.persistentDataPath + "/PlayerData.dat", FileMode.Open);
+                PlayersData = (PlayerData)pf.Deserialize(pfile);
+                file.Close();
+                Debug.LogWarning("PlayersData Loaded");
+            } else {*/
+                BinaryFormatter pf = new BinaryFormatter();
+                FileStream pfile = File.Create(Application.persistentDataPath + "/PlayerData.dat");
+                setPlayerInitials();
+                pf.Serialize(pfile, PlayersData);
+                file.Close();
+                Debug.LogWarning("Created new PlayersData and saved");
+            //}
+
         } else if (control!=this){
 			Destroy(gameObject);
 		}
@@ -515,11 +532,12 @@ public class GameController : MonoBehaviour {
         if (force.magnitude > StrongestGravit) { //add overlap section eventually to prevent binary setups causing a major issue
             StrongestGravit = force.magnitude; //need to cause entering of this loop if level was reset
             StrongestPlanet = planet;
-            StrongestPlanetDist = Vector3.Distance(StrongestPlanet.transform.position, player.transform.position);
+            //StrongestPlanetDist = Vector3.Distance(StrongestPlanet.transform.position, player.transform.position);
             camhook = false; //allow for dynamic change
             Debug.Log("New strongest planet, name " + StrongestPlanet.name);
         }
         player.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse); //change max gravity based on distance from object
+        StrongestPlanetDist = Vector3.Distance(StrongestPlanet.transform.position, player.transform.position); //what was I thinking not running this in update
     }
 
     public void SceneSwitchers (int target) { //consider using this for level load stat
@@ -761,7 +779,7 @@ public class GameController : MonoBehaviour {
         CamMode = false; //set to dynacam
         CamTarget = new Vector3((StrongestPlanet.transform.position.x + target.transform.position.x) / 2, (StrongestPlanet.transform.position.y + target.transform.position.y) / 2, target.transform.position.z);
         CamZoom = 0.5f * StrongestPlanetDist; //should be dist to strongest plannet?
-        if (CamZoom <= 5f) { //dist less then like 9 at this point
+        if (CamZoom < 5f) { //dist less then like 9 at this point
             CamZoom = 5f;
         }
         CamBound = 0.2f;
@@ -787,10 +805,6 @@ public class GameController : MonoBehaviour {
         DataPlay.SilverRequirement = new float[totallevels];
         DataPlay.GoldRequirement = new float[totallevels];
         DataPlay.maxzoomoutsize = new float[totallevels];
-
-        DataPlay.HighestFuel = new float[totallevels];
-        DataPlay.TrophyLevel = new int[totallevels];
-        DataPlay.completed = new int[totallevels];
 
         DataPlay.alphapresent = new bool[totallevels];
         DataPlay.betapresent = new bool[totallevels];
@@ -822,15 +836,21 @@ public class GameController : MonoBehaviour {
         DataPlay.stratviewsize[3] = 17f;
 
         DataPlay.maxzoomoutsize[3] = 25f;
-
-        DataPlay.HighestFuel[3] =0f;
-        DataPlay.completed[3] = 0;
-        DataPlay.TrophyLevel[3] = 0;
-
-        DataPlay.alphapresent[3] = true;
+        
+        DataPlay.alphapresent[3] = true; //Types of planets present
         DataPlay.betapresent[3] = true;
         DataPlay.gammapresent[3] = false;
         
+    }
+
+    public void setPlayerInitials() {
+        PlayersData.HighestFuel = new float[totallevels];
+        PlayersData.TrophyLevel = new int[totallevels];
+        PlayersData.completed = new int[totallevels];
+
+        PlayersData.HighestFuel[3] = 0f;
+        PlayersData.completed[3] = 0;
+        PlayersData.TrophyLevel[3] = 0;
     }
 }
 
@@ -865,7 +885,9 @@ public class GameData {
     public bool[] betapresent;
     public bool[] gammapresent;
 
-
+}
+[Serializable]
+public class PlayerData {
     //PlayerData
     public float[] HighestFuel; //caclulate on level success()
     public int[] TrophyLevel; //0=null, 1=bronze, 2=silver, 3=gold success()
