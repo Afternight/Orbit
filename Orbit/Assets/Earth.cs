@@ -102,7 +102,18 @@ public class Earth : MonoBehaviour {
         //PlayersData nessasaries
         //control.PlayersData.completed[Application.loadedLevel] = 1;
         //TODO Replace with trophy saver
-        control.PlayersData.unlocked[Application.loadedLevel + 1] = true; //unlock next level
+        if (control.fuel >= control.DataPlay.GoldRequirement[Application.loadedLevel]) {
+            control.PlayersData.TrophyLevel[Application.loadedLevel] = 4;
+        } else if (control.fuel >= control.DataPlay.SilverRequirement[Application.loadedLevel]) {
+            control.PlayersData.TrophyLevel[Application.loadedLevel] = 3;
+        } else if (control.fuel >= control.DataPlay.BronzeRequirement[Application.loadedLevel]) {
+            control.PlayersData.TrophyLevel[Application.loadedLevel] = 2;
+        } else {
+            control.PlayersData.TrophyLevel[Application.loadedLevel] = 1;
+        }
+        if ((Application.loadedLevel + 1) <= 5) {
+            control.PlayersData.unlocked[Application.loadedLevel + 1] = true; //unlock next level
+        }
         if (control.fuel > control.PlayersData.HighestFuel[Application.loadedLevel]) {
             Debug.LogWarning("NEW HIGH SCORE");
             control.PlayersData.HighestFuel[Application.loadedLevel] = control.fuel;

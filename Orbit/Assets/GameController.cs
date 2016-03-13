@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
 	private Vector3 trajscale= new Vector3 (10,0,10);
 
     //Constants
-    public static int totallevels = 4;
+    public static int totallevels = 11;
     public static int totalmenus = 3;
 
 	//Cam controls
@@ -840,7 +840,60 @@ public class GameController : MonoBehaviour {
         DataPlay.alphapresent[3] = true; //Types of planets present
         DataPlay.betapresent[3] = true;
         DataPlay.gammapresent[3] = false;
-        
+
+
+        //Level 2 (index of 4)
+        DataPlay.GoldRequirement[4] = 3f;
+        DataPlay.SilverRequirement[4] = 2f;
+        DataPlay.BronzeRequirement[4] = 1f;
+        DataPlay.PanSpeed[4] = 0.01f;
+        DataPlay.InitialFuel[4] = 5f;
+        DataPlay.stardirectx[4] = 0.1f;
+        DataPlay.stardirecty[4] = 0f;
+        DataPlay.stardirectz[4] = 0f;
+
+        DataPlay.xboundsx[4] = -38f;
+        DataPlay.xboundsy[4] = 38f;
+        DataPlay.yboundsx[4] = -19f;
+        DataPlay.yboundsy[4] = 19f;
+
+        DataPlay.stratviewposx[4] = 0f;
+        DataPlay.stratviewposy[4] = 0f;
+        DataPlay.stratviewposz[4] = -10f;
+        DataPlay.stratviewsize[4] = 17f;
+
+        DataPlay.maxzoomoutsize[4] = 25f;
+
+        DataPlay.alphapresent[4] = true; //Types of planets present
+        DataPlay.betapresent[4] = true;
+        DataPlay.gammapresent[4] = false;
+
+        //Level 3 (index of 5)
+        DataPlay.GoldRequirement[5] = 3f;
+        DataPlay.SilverRequirement[5] = 2f;
+        DataPlay.BronzeRequirement[5] = 1f;
+        DataPlay.PanSpeed[5] = 0.01f;
+        DataPlay.InitialFuel[5] = 5f;
+        DataPlay.stardirectx[5] = 0.1f;
+        DataPlay.stardirecty[5] = 0f;
+        DataPlay.stardirectz[5] = 0f;
+
+        DataPlay.xboundsx[5] = -38f;
+        DataPlay.xboundsy[5] = 38f;
+        DataPlay.yboundsx[5] = -19f;
+        DataPlay.yboundsy[5] = 19f;
+
+        DataPlay.stratviewposx[5] = 0f;
+        DataPlay.stratviewposy[5] = 0f;
+        DataPlay.stratviewposz[5] = -10f;
+        DataPlay.stratviewsize[5] = 17f;
+
+        DataPlay.maxzoomoutsize[5] = 25f;
+
+        DataPlay.alphapresent[5] = true; //Types of planets present
+        DataPlay.betapresent[5] = true;
+        DataPlay.gammapresent[5] = false;
+
     }
 
     public void setPlayerInitials() {
@@ -848,9 +901,20 @@ public class GameController : MonoBehaviour {
         PlayersData.TrophyLevel = new int[totallevels];
         PlayersData.unlocked = new bool[totallevels];
 
+        //Level 0 (index of 3)
         PlayersData.HighestFuel[3] = 0f;
         PlayersData.TrophyLevel[3] = 0;
         PlayersData.unlocked[3] = true; //first level so needs to be unlocked
+
+        //Level 2 (index of 4)
+        PlayersData.HighestFuel[4] = 0f;
+        PlayersData.TrophyLevel[4] = 0;
+        PlayersData.unlocked[4] = false; //first level so needs to be unlocked
+
+        //Level 3 (index of 5)
+        PlayersData.HighestFuel[5] = 0f;
+        PlayersData.TrophyLevel[5] = 0;
+        PlayersData.unlocked[5] = false; //first level so needs to be unlocked
 
     }
 }
