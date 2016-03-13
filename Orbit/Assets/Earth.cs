@@ -100,7 +100,9 @@ public class Earth : MonoBehaviour {
         control.moveInaction = true;
 
         //PlayersData nessasaries
-        control.PlayersData.completed[Application.loadedLevel] = 1;
+        //control.PlayersData.completed[Application.loadedLevel] = 1;
+        //TODO Replace with trophy saver
+        control.PlayersData.unlocked[Application.loadedLevel + 1] = true; //unlock next level
         if (control.fuel > control.PlayersData.HighestFuel[Application.loadedLevel]) {
             Debug.LogWarning("NEW HIGH SCORE");
             control.PlayersData.HighestFuel[Application.loadedLevel] = control.fuel;

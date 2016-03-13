@@ -846,11 +846,12 @@ public class GameController : MonoBehaviour {
     public void setPlayerInitials() {
         PlayersData.HighestFuel = new float[totallevels];
         PlayersData.TrophyLevel = new int[totallevels];
-        PlayersData.completed = new int[totallevels];
+        PlayersData.unlocked = new bool[totallevels];
 
         PlayersData.HighestFuel[3] = 0f;
-        PlayersData.completed[3] = 0;
         PlayersData.TrophyLevel[3] = 0;
+        PlayersData.unlocked[3] = true; //first level so needs to be unlocked
+
     }
 }
 
@@ -890,7 +891,7 @@ public class GameData {
 public class PlayerData {
     //PlayerData
     public float[] HighestFuel; //caclulate on level success()
-    public int[] TrophyLevel; //0=null, 1=bronze, 2=silver, 3=gold success()
+    public int[] TrophyLevel; //0=null, 1=Completed, 2=bronze, 3=silver, 4=gold success()
     //todo, add unlocked levels
-    public int[] completed; //0=no, 1=yes success()
+    public bool[] unlocked;
 }
